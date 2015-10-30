@@ -38,6 +38,7 @@ namespace HMSEditorNS {
 		public List<string> Params = new List<string>();
 		public int PositionStart = 0;
 		public int PositionEnd   = 0;
+
 		// constructors
 		public HMSItem() {
 		}
@@ -271,7 +272,6 @@ namespace HMSEditorNS {
 		public static string StartArgs        = "";
 		public static string GitHubHMSEditor  = "WendyH/HMSEditor";
 		public static string GitHubTemplates  = "WendyH/HMSEditor-Templates";
-		public static string ErrorLogFile     = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "/HMSEditor/errors.log";
 		public static int    MaxLogSize       = 1024 * 1024 * 10; // 10 MB
 		public static string HmsTypesStringWithHelp = "|{Тип данных: целочисленное}Byte|Word|Integer|Longint|Cardinal|TColor|TColor32|{Тип данных: логический}Boolean|{Тип данных:  расширенный (с плавающей запятой)}Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|{Тип данных: символьный}Char|{Тип данных: строковый}String|{Тип данных: Variant (вариантный тип)}Pointer|Variant|{Тип данных: массив}Array|{}Nil|Null|True|False|";
 		public static string HmsTypesString   = "";
@@ -279,7 +279,25 @@ namespace HMSEditorNS {
 		public static string ClassesString    = "";
 		public static string NotFoundedType   = "|TFloat|TSizeConstraints|THelpType|TMargins|TBasicAction|TBiDiMode|TDragKind|TDragMode|HDC|TFixed|TAutoComplete|TBevelEdges|TBevelKind|TBorderStyle|TImeMode|TScrollBarStyle|TPixelAccessMode|TArrayOfArrayOfFixedPoint|TArrayOfFixedPoint|TArrayOfArrayOfFloatPoint|TArrayOfFloatPoint|TFormBorderStyle|TDefaultMonitor|TIcon|TPadding|TPopupMode|TPrintScale|TEllipsisPosition|THotTrackStyles|TListItems|TMenuAutoFlag|TMenuItemAutoFlag|TMenuBreak|TOpenOptionsEx|TVerticalAlignment|TPopupAlignment|TMenuAnimation|TTrackButton|TArrayOfArrayOfArrayOfFixedPoint|TTBDrawingStyle|TEdgeBorders|TEdgeStyle|TGradientDirection|TTBGradientDrawingOptions|TPositionToolTip|TMultiSelectStyle|";
 		public static string CurrentParamType = "";
-		private static INI CommonSettings = new INI(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "/HMSEditor/Settings.ini");
+
+		private static string workingdir = "";
+		internal static string WorkingDir {
+			get {
+				if (workingdir.Length == 0)
+					workingdir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + DS + "HMSEditor";
+				return workingdir;
+			}
+		}
+
+		private static string downloaddir = "";
+		internal static string DownloadDir {
+			get { if (downloaddir.Length == 0) downloaddir = getDownloadFolderPath(); return downloaddir; }
+		}
+
+		internal static char DS { get { return Path.DirectorySeparatorChar; } }
+
+		public static string TemplatesDir { get { return WorkingDir + DS + "Templates" ; } }
+		public static string ErrorLogFile { get { return WorkingDir + DS + "errors.log"; } }
 
 		public static HMSClasses HmsClasses = new HMSClasses();
 		public static HMSClasses HmsTypes   = new HMSClasses();
@@ -300,20 +318,19 @@ namespace HMSEditorNS {
 		private static Regex regexTypeCPP     = new Regex(@"^(\w+)\s+\w+\s*?(\(|;|=|\.)" , RegexOptions.Compiled);
 		private static Regex regexType        = new Regex(@":\s*?(\w+)"                  , RegexOptions.Compiled);
 
-		public  static string    TemplatesDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "/HMSEditor/Templates";
 		public  static Templates Templates    = new Templates();
 		private static System.Threading.Timer DownloadTimer = new System.Threading.Timer(DownloadTemplateUpdates_Task, null, Timeout.Infinite, Timeout.Infinite);
 
 		private static void DownloadTemplateUpdates_Task(object state) {
-			string tmpFile = getDownloadFolderPath() + "/HMSEditorTemplates.zip";
+			string tmpFile = DownloadDir + DS + "HMSEditorTemplates.zip";
 			try {
-				string lastUpdateStored = CommonSettings.Get("TemplateLastUpdate", "Common", "");
+				string lastUpdateStored = HMSEditor.Settings.Get("TemplateLastUpdate", "Common", "");
 				string lastUpdateDate   = GitHub.GetRepoUpdatedDate(GitHubTemplates);
 				if (lastUpdateStored != lastUpdateDate) {
 					GitHub.DownloadLegacyArchive(GitHubTemplates, tmpFile);
 					if (ExtractZip(tmpFile, true)) {
-						CommonSettings.Set("TemplateLastUpdate", lastUpdateDate, "Common");
-						CommonSettings.Save();
+						HMSEditor.Settings.Set("TemplateLastUpdate", lastUpdateDate, "Common");
+						HMSEditor.Settings.Save();
 						LoadTemplates();
 					}
 				}
@@ -394,18 +411,30 @@ namespace HMSEditorNS {
 			}
 		}
 
-		public static void InitHMSKnowledgeDatabase() {
+		internal static void CreateIfNotExistDirectory(string dir, bool resetWorkingDirIfError = false) {
+			try {
+				if (!Directory.Exists(WorkingDir))
+					Directory.CreateDirectory(WorkingDir);
+			} catch (Exception e) {
+				if (resetWorkingDirIfError) workingdir = "";
+				LogError(e.ToString());
+			}
+        }
+
+		public static void InitAndLoadHMSKnowledgeDatabase() {
+			CreateIfNotExistDirectory(WorkingDir, true);
+			CreateIfNotExistDirectory(WorkingDir + DS + "Templates");
 			GitHub.Init();
-			LoadTemplates();                           // Сначала загружаем шаблоны, какие есть
+			LoadTemplates(); // Сначала загружаем шаблоны, какие есть
 
 			// Проверяем, когда последний раз запрашивали версию шаблонов на Github
-			string lastCheck = CommonSettings.Get("TemplateLastCheck", "Common", "");
+			string lastCheck = HMSEditor.Settings.Get("TemplateLastCheck", "Common", "");
 			string nowDate   = DateTime.Now.ToString("yyyy.MM.dd");
 			if (lastCheck != nowDate) {
 				// Если сегодня ещё не проверяли - запускаем фоновое обновление шаблонов с Github
 				DownloadTimer.Change(0, Timeout.Infinite);
-				CommonSettings.Set("TemplateLastCheck", nowDate, "Common");
-				CommonSettings.Save();
+				HMSEditor.Settings.Set("TemplateLastCheck", nowDate, "Common");
+				HMSEditor.Settings.Save();
 			}
 
 			// Загружаем базу данных знаний о HMS (классы, типы, функции и т.п.) из ресурсов
@@ -752,12 +781,11 @@ namespace HMSEditorNS {
 		#endregion Работа с шаблонами
 
 		public static string getHomePath() {
-			// Not in .NET 2.0
-			// System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-			if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
-				return System.Environment.GetEnvironmentVariable("HOME");
+			// Not in .NET 2.0 System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				return Environment.GetEnvironmentVariable("HOME");
 
-			return System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+			return Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 		}
 
 		internal static string getDownloadFolderPath() {

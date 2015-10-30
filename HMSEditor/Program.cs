@@ -25,29 +25,37 @@ namespace HMSEditorNS {
 					// Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
 					AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
-					Application.EnableVisualStyles();
-					Application.SetCompatibleTextRenderingDefault(false);
+					try {
+						Application.EnableVisualStyles();
+						Application.SetCompatibleTextRenderingDefault(false);
 
-					// Загружаем встроенные шрифты
-					HMS.AddFontFromResource("RobotoMono-Regular.ttf");
-					HMS.AddFontFromResource("Roboto-Regular.ttf"    );
+						// Загружаем встроенные шрифты
+						HMS.AddFontFromResource("RobotoMono-Regular.ttf");
+						HMS.AddFontFromResource("Roboto-Regular.ttf");
 
-					// Заполняем базу знаний функций, классов, встроенных констант и переменных...
-					HMS.InitHMSKnowledgeDatabase();
+						// Заполняем базу знаний функций, классов, встроенных констант и переменных...
+						HMS.InitAndLoadHMSKnowledgeDatabase();
 
-					HMSEditor.DebugMe = CheckKey(args, "-debugga");
+						HMSEditor.DebugMe = CheckKey(args, "-debugga");
 
-					if (CheckKey(args, "-givemesomemagic")) {
-						// Запуск "тихого" режима
-						if (HMSEditor.WatchHMS())
-							Application.Run();
-					} else {
-						// Запуск в обычном режиме с появлением отдельного самостоятельного окна
-						Application.Run(new FormMain());
+						if (CheckKey(args, "-givemesomemagic")) {
+							// Запуск "тихого" режима
+							if (HMSEditor.WatchHMS())
+								Application.Run();
+						} else {
+							// Запуск в обычном режиме с появлением отдельного самостоятельного окна
+							Application.Run(new FormMain());
+						}
+
+						// Проверяем, были ли выполнены все дествия при выходе (снятие хуков и проч.)
+						if (!HMSEditor.Exited) HMSEditor.Exit();
+
+					} catch (Exception e) {
+						MessageBox.Show("Очень жаль, но работа программы не возможна.\n\n"+ e.ToString(), HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						HMS.LogError(e.ToString());
+
 					}
-					
-					// Проверяем, были ли выполнены все дествия при выходе (снятие хуков и проч.)
-					if (!HMSEditor.Exited) HMSEditor.Exit();
+
 				}
 			}
 		}
@@ -66,7 +74,7 @@ namespace HMSEditorNS {
 		}
 
 		/// <summary>
-		/// Функция, вызываемая при событии, в случаи неудачного определения зависимостей (а оно произойдёт, поверьте). Тут мы это пытаемся исправить.
+		/// Функция, вызываемая при событии, в случае неудачного определения зависимостей (а оно произойдёт, поверьте). Тут мы это пытаемся исправить.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="args"></param>

@@ -37,10 +37,9 @@
 			// 
 			// progressBar1
 			// 
-			this.progressBar1.Location = new System.Drawing.Point(76, 118);
+			this.progressBar1.Location = new System.Drawing.Point(188, 180);
 			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(348, 20);
-			this.progressBar1.Step = 5;
+			this.progressBar1.Size = new System.Drawing.Size(296, 20);
 			this.progressBar1.TabIndex = 1;
 			this.progressBar1.Visible = false;
 			// 
@@ -171,6 +170,7 @@
 			this.Controls.Add(this.btnUpdate);
 			this.Controls.Add(this.labelNewVersion);
 			this.Controls.Add(this.logo);
+			this.DoubleBuffered = true;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -180,7 +180,7 @@
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "О программе";
-			this.Load += new System.EventHandler(this.AboutBox1_Load);
+			this.Load += new System.EventHandler(this.AboutDialog_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

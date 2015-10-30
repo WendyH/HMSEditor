@@ -32,13 +32,13 @@ namespace HMSEditorNS {
 				else if (answ == DialogResult.Yes   ) Editor.SaveFile();
 			}
 			string section = Editor.DialogClass;
-			Editor.Settings.Set("WindowWidth" , this.Width      , section);
-			Editor.Settings.Set("WindowHeight", this.Height     , section);
-			Editor.Settings.Set("WindowTop"   , this.Top        , section);
-			Editor.Settings.Set("WindowLeft"  , this.Left       , section);
-			Editor.Settings.Set("WindowState" , this.WindowState, section);
+			HMSEditor.Settings.Set("WindowWidth" , this.Width      , section);
+			HMSEditor.Settings.Set("WindowHeight", this.Height     , section);
+			HMSEditor.Settings.Set("WindowTop"   , this.Top        , section);
+			HMSEditor.Settings.Set("WindowLeft"  , this.Left       , section);
+			HMSEditor.Settings.Set("WindowState" , this.WindowState, section);
 
-			Editor.Settings.Set("WatchHMS"    , checkBoxWatchHMS.Checked, section);
+			HMSEditor.Settings.Set("WatchHMS"    , checkBoxWatchHMS.Checked, section);
 			Editor.SaveSettings();
 		}
 
@@ -48,10 +48,10 @@ namespace HMSEditorNS {
 			Editor.LoadSettings();
 			Editor.ToolStripVisible = true;
 			
-			WindowState = (Editor.Settings.Get("WindowState", section, "") == "Maximized") ? FormWindowState.Maximized : FormWindowState.Normal;
+			WindowState = (HMSEditor.Settings.Get("WindowState", section, "") == "Maximized") ? FormWindowState.Maximized : FormWindowState.Normal;
 			if (!Editor.LoadFile(Editor.Filename)) Editor.Filename = "";
 
-			checkBoxWatchHMS.Checked = (Editor.Settings.Get("WatchHMS" , section, "0") == "1");
+			checkBoxWatchHMS.Checked = (HMSEditor.Settings.Get("WatchHMS" , section, "0") == "1");
 			checkBoxDebug   .Checked = HMSEditor.DebugMe;
 			checkBoxDebug   .Visible = HMSEditor.DebugMe;
 

@@ -30,6 +30,8 @@ namespace HMSEditorNS {
 		private static IntPtr     hookMouse        = IntPtr.Zero;
 		private static uint       HMSProcessID     = 0;
 
+		public static INI Settings = new INI(HMS.WorkingDir + HMS.DS + "HMSEditor.ini");
+
 		#region Regular Expressions Magnetic Field
 		private static Regex regexProceduresCPP    = new Regex(@"[\r\n]\s*?(?<type>\w+)\s+(\w+)\s*?\(", RegexOptions.Singleline | RegexOptions.Compiled);
 		private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(\w+)"    , RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -321,9 +323,8 @@ namespace HMSEditorNS {
 		public bool Modified       { get { return Editor.IsChanged     ; } set { Editor.IsChanged      = value; } }
 		public int  SelectionStart { get { return Editor.SelectionStart; } set { Editor.SelectionStart = value; } }
 
-		public INI        Settings    = new INI(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/HMSEditor.ini");
-		public string     DialogClass = "Main";
-		public ValueToolTip ValueHint = new ValueToolTip();
+		public string       DialogClass = "Main";
+		public ValueToolTip ValueHint   = new ValueToolTip();
 
 		public AutocompleteItems LocalVars = new AutocompleteItems();
 		public AutocompleteItems Variables = new AutocompleteItems();

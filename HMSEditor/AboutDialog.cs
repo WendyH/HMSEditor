@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Net;
 using System.Diagnostics;
+using System.Threading;
 
 namespace HMSEditorNS {
 	partial class AboutDialog: Form {
@@ -13,13 +12,13 @@ namespace HMSEditorNS {
 		private static ProgressBar progress   = null;
 		private static string tmpFile = "";
 		private bool   ExistUpdate    = false;
-		private Timer  timer          = new Timer();
+		private System.Threading.Timer UpdateTimer = new System.Threading.Timer(UpdateTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
 
 		public AboutDialog() {
 			ThisDialog = this;
 			InitializeComponent();
 			
-			tmpFile = HMS.getDownloadFolderPath() + "\\HMSEditor.exe";
+			tmpFile = HMS.DownloadDir + HMS.DS + "HMSEditor.exe";
             this.Text = string.Format("О программе {0}", AssemblyTitle);
 			this.labelProductName.Text = AssemblyProduct;
 			this.labelVersion      .Text = string.Format("Версия {0}", AssemblyVersion);
@@ -93,9 +92,7 @@ namespace HMSEditorNS {
 		}
 		#endregion
 
-		private void CheckUpdate() {
-			string lastVersion = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor);
-
+		private void CheckUpdate(string lastVersion) {
 			if (GitHub.CompareVersions(lastVersion, AssemblyVersion) > 0) {
 				ExistUpdate = true;
 				labelNewVersion.Text    = "Есть новая версия " + lastVersion;
@@ -104,20 +101,20 @@ namespace HMSEditorNS {
 			}
 		}
 
-		private void AboutBox1_Load(object sender, EventArgs e) {
-			timer.Tick += Timer_Tick;
-			timer.Interval = 1;
-			if (HMSEditor.NeedRestart) SetNeedRestart();
-			else timer.Start();
+		private static void UpdateTimer_Task(object state) {
+			string lastVersion = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor);
+			ThisDialog.Invoke((MethodInvoker)delegate {
+				ThisDialog.CheckUpdate(lastVersion);
+			});
 		}
 
-		private void Timer_Tick(object sender, EventArgs e) {
-			timer.Stop();
-			CheckUpdate();
+		private void AboutDialog_Load(object sender, EventArgs e) {
+			if (HMSEditor.NeedRestart) SetNeedRestart();
+			UpdateTimer.Change(1, Timeout.Infinite);
 		}
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-			System.Diagnostics.Process.Start(linkLabel1.Text);
+			Process.Start(linkLabel1.Text);
 		}
 
 
@@ -140,7 +137,6 @@ namespace HMSEditorNS {
 				Close();
 				return;
 			}
-
 			progress.Show();
 
 			GitHub.DownloadFileCompleted   += new AsyncCompletedEventHandler(DownloadFileCallback);
