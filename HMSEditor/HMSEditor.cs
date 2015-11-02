@@ -907,7 +907,7 @@ namespace HMSEditorNS {
 			DebugMode           = true;
 			NeedCheckDebugState = true;
 			NativeMethods.SendNotifyMessage(hWndScriptDialog, NativeMethods.WM_ACTIVATE);
-			NativeMethods.SendNotifyKey(hWndMemo, NativeMethods.VK_F8 | AltKeys);
+			NativeMethods.SendNotifyKey(hWndMemo, NativeMethods.VK_F9 | AltKeys);
 		}
 
 		private void SendKey(int key) {
@@ -1218,7 +1218,7 @@ namespace HMSEditorNS {
 		}
 
 		private void EditorMouseClick(object sender, MouseEventArgs e) {
-			if (e.X < (Editor.LeftIndent - 2)) {
+			if (e.X < (Editor.LeftIndent - 8)) {
 				int iFirstLine = Editor.YtoLineIndex();
 				int yFirstLine = Editor.LineInfos[iFirstLine].startY - Editor.VerticalScroll.Value;
                 int iLine = (int)((e.Y - yFirstLine) / (Editor.Font.Height - 1)) + iFirstLine;
