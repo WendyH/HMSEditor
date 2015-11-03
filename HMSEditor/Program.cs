@@ -47,11 +47,11 @@ namespace HMSEditorNS {
 							Application.Run(new FormMain());
 						}
 
-						// Проверяем, были ли выполнены все дествия при выходе (снятие хуков и проч.)
+						// Проверяем, были ли выполнены все действия при выходе (снятие хуков и проч.)
 						if (!HMSEditor.Exited) HMSEditor.Exit();
 
 					} catch (Exception e) {
-						MessageBox.Show("Очень жаль, но работа программы не возможна.\n\n"+ e.ToString(), HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+						MessageBox.Show("Очень жаль, но работа программы невозможна.\n\n"+ e.ToString(), HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
 						HMS.LogError(e.ToString());
 
 					}

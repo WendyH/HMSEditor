@@ -253,7 +253,7 @@ HmsOAuthGetAccessToken(const aAccessTokenUrl, aReferer, aConsumerKey, aConsumerS
   aOAuthToken - переменная, которая будет содержать токен доступа как результат
   aOAuthTokenSecret - переменная, которая будет содержать секретный код для получения доступа как результат
   aSignExcludeDuplicates - Флаг исключения дубликатов. Необязательный параметр.
-HmsOAuthLogin(const aRequestTokenUrl, aAuthorizeUrl, aAccessTokenUrl, aReferer, aConsumerKey, aConsumerSecret, aAuthorizationCodeTitle, aAuthorizationCodePrompt: String; const aOAuthExtParameters: array of String; var aOAuthToken, aOAuthTokenSecret: String): Boolean|Авторизация через сервис OAuth2 с открытием окна подтверждения.
+HmsOAuthLogin(const aRequestTokenUrl, aAuthorizeUrl, aAccessTokenUrl, aReferer, aConsumerKey, aConsumerSecret, aAuthorizationCodeTitle, aAuthorizationCodePrompt: String; const aOAuthExtParameters: array of String; var aOAuthToken, aOAuthTokenSecret: String): Boolean|Авторизация через сервис OAuth с открытием окна подтверждения.
   aRequestTokenUrl - URL страницы сервиса OAuth для получения токена
   aAuthorizeUrl - URL страницы авторизации сервиса OAuth
   aAccessTokenUrl - URL страницы авторизации по токену через сервис OAuth
