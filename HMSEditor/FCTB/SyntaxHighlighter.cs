@@ -1244,7 +1244,7 @@ namespace FastColoredTextBoxNS {
 		void InitPascalScriptRegex() {
 			if (HMSEditorNS.HMS.ClassesString.Length > 2)
 				HmsClasses = HMSEditorNS.HMS.ClassesString.Substring(1, HMSEditorNS.HMS.ClassesString.Length - 2);
-			PascalScriptStringRegex = new Regex(@"""(\\[\s\S]|[^""\r])*""|'(\\[\s\S]|[^'\r])*'|(//.*|\{[\s\S]*?\})", RegexCompiledOption);
+			PascalScriptStringRegex = new Regex(@"""([^""\r])*""|'([^'\r])*'|(//.*|\{[\s\S]*?\})", RegexCompiledOption);
 			PascalScriptNumberRegex = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b", RegexCompiledOption);
 			string keywords = "PROGRAM|USES|CONST|VAR|ARRAY|NOT|IN|IS|OR|XOR|DIV|MOD|AND|SHL|SHR|BREAK|CONTINUE|EXIT|BEGIN|END|IF|THEN|ELSE|CASE|OF|REPEAT|UNTIL|WHILE|DO|FOR|TO|DOWNTO|TRY|FINALLY|EXCEPT|WITH|FUNCTION|PROCEDURE";
 			PascalScriptKeywordRegex1 = new Regex(@"\b(" + hmsCommonTypes + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);

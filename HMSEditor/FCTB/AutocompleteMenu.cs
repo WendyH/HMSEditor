@@ -17,6 +17,7 @@ namespace FastColoredTextBoxNS
     public class AutocompleteMenu : ToolStripDropDown
     {
 		public  string[]  lastwords = new string[20]; // By WendyH
+		public  bool      OnlyCtrlSpace = false;
         private AutocompleteListView listView;
         public  ToolStripControlHost host;
         public  Range Fragment { get; internal set; }
@@ -295,6 +296,7 @@ namespace FastColoredTextBoxNS
 		}
 
 		void tb_KeyPressed(object sender, KeyPressEventArgs e) {
+			if (Menu.OnlyCtrlSpace) return; // By WendyH
 			bool backspaceORdel = e.KeyChar == '\b' || e.KeyChar == 0xff;
 
 			/*
@@ -594,6 +596,7 @@ namespace FastColoredTextBoxNS
                 }
                 else
                 {
+					if (Menu.OnlyCtrlSpace && timer.Enabled) timer.Stop(); // By WendyH
                     if (e.KeyCode == Keys.Escape && timer.Enabled)
                         timer.Stop();
                 }

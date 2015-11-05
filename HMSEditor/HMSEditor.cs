@@ -20,6 +20,7 @@ namespace HMSEditorNS {
 		public  static string     MsgCaption       = "HMS Editor";
 		public  static bool       DebugMe          = false;
 		public  static bool       Exited           = false;
+		public  static bool       SilentMode       = false;
 		public  static HMSEditor  ActiveEditor     = null;
 		public  static bool       NeedRestart      = false;
 		public  static string     NeedCopyNewFile  = "";
@@ -29,6 +30,7 @@ namespace HMSEditorNS {
 		private static IntPtr     hookHMS          = IntPtr.Zero;
 		private static IntPtr     hookMouse        = IntPtr.Zero;
 		private static uint       HMSProcessID     = 0;
+		private static IntPtr     HMSProcessHWND   = IntPtr.Zero;
 
 		public static INI Settings = new INI(HMS.WorkingDir + HMS.DS + "HMSEditor.ini");
 
@@ -100,8 +102,9 @@ namespace HMSEditorNS {
 			if (hookHMS == IntPtr.Zero) {
 				Process[] processes = Process.GetProcessesByName("hms");
 				if (processes.Length > 0) {
-					HMSProcessID = (uint)processes[0].Id;
-					hookHMS   = UnsafeNativeMethods.SetWinEventHook(NativeMethods.EVENT_SYSTEM_FOREGROUND, NativeMethods.EVENT_OBJECT_LOCATIONCHANGE, IntPtr.Zero, procHookHMS, HMSProcessID, 0, NativeMethods.WINEVENT_OUTOFCONTEXT | NativeMethods.WINEVENT_SKIPOWNPROCESS);
+					HMSProcessID   = (uint)processes[0].Id;
+					HMSProcessHWND = processes[0].MainWindowHandle;
+					hookHMS = UnsafeNativeMethods.SetWinEventHook(NativeMethods.EVENT_SYSTEM_FOREGROUND, NativeMethods.EVENT_OBJECT_LOCATIONCHANGE, IntPtr.Zero, procHookHMS, HMSProcessID, 0, NativeMethods.WINEVENT_OUTOFCONTEXT | NativeMethods.WINEVENT_SKIPOWNPROCESS);
 					hookMouse = UnsafeNativeMethods.SetWindowsHookEx(NativeMethods.WH_MOUSE_LL, mouseHookCallBack, NativeMethods.GetModuleHandle("user32"), 0);
 					success = true;
 				} else {
@@ -226,6 +229,10 @@ namespace HMSEditorNS {
 					return;
 				}
 				_buttonsCount = 0;
+			} else if (HMSProcessHWND == hwnd && eventType == NativeMethods.EVENT_OBJECT_DESTROY) {
+				Exit();
+				if (SilentMode) Application.Exit();
+
 			} else if (hWndEvaluateDialog!=IntPtr.Zero && eventType == NativeMethods.EVENT_SYSTEM_FOREGROUND) {
 				NativeMethods.GetClassName(hwnd, sb, sb.Capacity);
 				string name = sb.ToString();
@@ -318,6 +325,7 @@ namespace HMSEditorNS {
 		private int    LastTextLenght     = -1;
 		public  bool   CustomFont         = false;
 		private bool   NeedRecalcVars     = false;
+		private bool   CheckFunctionHelp  = false;
 		private string CurrentValidTypes  = "";  // Sets in CreateAutocomplete() procedure
 
 		public bool Modified       { get { return Editor.IsChanged     ; } set { Editor.IsChanged      = value; } }
@@ -771,6 +779,7 @@ namespace HMSEditorNS {
 			btnShowFoldingLines     .Checked = Settings.Get("ShowFoldingLines"    , section, btnShowFoldingLines     .Checked);
 			btnHighlightSameWords   .Checked = Settings.Get("HighlightSameWords"  , section, btnHighlightSameWords   .Checked);
 			btnSetIntelliSense      .Checked = Settings.Get("IntelliSense"        , section, btnSetIntelliSense      .Checked);
+			btnHints4CtrlSpace      .Checked = Settings.Get("IntelliOnlyCtrlSpace", section, btnHints4CtrlSpace      .Checked);
 			btnIntelliSenseFunctions.Checked = Settings.Get("EnableFunctionHelp"  , section, btnIntelliSenseFunctions.Checked);
 			btnEvaluateByMouse      .Checked = Settings.Get("EvaluateByMouse"     , section, btnEvaluateByMouse      .Checked);
 			btnAutoCompleteBrackets .Checked = Settings.Get("AutoCompleteBrackets", section, btnAutoCompleteBrackets .Checked);
@@ -797,6 +806,7 @@ namespace HMSEditorNS {
 			sVal = Settings.Get("Zoom", section, "100");
 			Editor.Zoom = Int32.Parse(sVal);
 
+			PopupMenu.OnlyCtrlSpace     = btnHints4CtrlSpace      .Checked;
 			PopupMenu.Enabled           = btnSetIntelliSense      .Checked;
 			Editor.AutoCompleteBrackets = btnAutoCompleteBrackets .Checked;
 			Editor.AutoIndent           = btnAutoIdent            .Checked;
@@ -839,6 +849,7 @@ namespace HMSEditorNS {
 				Settings.Set("ShowFoldingLines"    , btnShowFoldingLines     .Checked, section);
 				Settings.Set("HighlightSameWords"  , btnHighlightSameWords   .Checked, section);
 				Settings.Set("IntelliSense"        , btnSetIntelliSense      .Checked, section);
+				Settings.Set("IntelliOnlyCtrlSpace", btnHints4CtrlSpace      .Checked, section);
 				Settings.Set("EnableFunctionHelp"  , btnIntelliSenseFunctions.Checked, section);
 				Settings.Set("EvaluateByMouse"     , btnEvaluateByMouse      .Checked, section);
 				Settings.Set("AutoCompleteBrackets", btnAutoCompleteBrackets .Checked, section);
@@ -925,8 +936,8 @@ namespace HMSEditorNS {
 
 		#region Control Events
 		private void Editor_KeyDown(object sender, KeyEventArgs e) {
-			if      (e.KeyCode == Keys.F11) tsMain.Visible = !tsMain.Visible;
-			else if (e.KeyCode == Keys.F12) GotoDefinition();
+			if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
+			else if (e.KeyCode == Keys.F12   ) GotoDefinition();
 			else if (e.KeyCode == Keys.Escape) HideAllToolTipsAndHints();
 			else if (e.Alt) {
 				if      (e.KeyCode == Keys.D1) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "1");
@@ -948,8 +959,9 @@ namespace HMSEditorNS {
 				else if (e.KeyCode == Keys.D7) Editor.GotoBookmarkByName("7");
 				else if (e.KeyCode == Keys.D8) Editor.GotoBookmarkByName("8");
 				else if (e.KeyCode == Keys.D9) Editor.GotoBookmarkByName("9");
+			} else if (e.KeyCode == Keys.Oemcomma || (e.Shift && e.KeyCode == Keys.D9)) {
+				CheckFunctionHelp = true;
 			}
-
 
 			if (Attached) {
 				int AltKeys = 0;
@@ -983,7 +995,7 @@ namespace HMSEditorNS {
 			Locked = true;       // Say to other processes we is busy - don't tuch us!
 			BuildFunctionList(); // Only when text changed - build the list of functions
 			UpdateHmsCode();
-			if (EnableFunctionToolTip) CheckPositionIsInParametersSequence();
+			if (EnableFunctionToolTip && CheckFunctionHelp) CheckPositionIsInParametersSequence();
 			if (TextChangedDelayed != null) TextChangedDelayed(this, e);
 			Locked = false;
 		}
@@ -1132,6 +1144,10 @@ namespace HMSEditorNS {
 
 		private void btnAutoCompleteBrackets_Click(object sender, EventArgs e) {
 			Editor.AutoCompleteBrackets = btnAutoCompleteBrackets.Checked;
+		}
+
+		private void btnHints4CtrlSpace_Click(object sender, EventArgs e) {
+			PopupMenu.OnlyCtrlSpace = btnHints4CtrlSpace.Checked;
 		}
 
 		private void btnAutoIdent_Click(object sender, EventArgs e) {
@@ -1649,8 +1665,8 @@ namespace HMSEditorNS {
 			int   iBack = Math.Max(Editor.Selection.Start.iLine - 3, 0); // Look back 3 lines maximum
 			Place place = new Place(0, iBack);
 			Range range = new Range(Editor, place, Editor.Selection.Start);
-
-			HMS.CurrentParamType = "";
+			CheckFunctionHelp = false;
+            HMS.CurrentParamType = "";
 			string text = WhithoutStringAndComments(range.Text, true);
 			Match m = regexFoundOurFunction.Match(text);
 			if (m.Success) {

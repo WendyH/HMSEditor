@@ -79,22 +79,24 @@
 			this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
 			this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSubMenuIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnSetIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnMouseHelp = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnAutoIdent = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnAutoIdentChars = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnIntelliSenseFunctions = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnAutoCompleteBrackets = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnAutoIdent = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnAutoIdentChars = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnMouseHelp = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnEvaluateByMouse = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnHints4CtrlSpace = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
 			this.btnUnderlinePascalKeywords = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnRedStringsHighlight = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnToolStripMenuItemFONT = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripButtonHotKeys = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-			this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnUnload = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
@@ -559,14 +561,7 @@
             this.btnVerticalLineText,
             this.toolStripSeparator12,
             this.btnHighlightSameWords,
-            this.btnSetIntelliSense,
-            this.btnIntelliSenseFunctions,
-            this.btnAutoCompleteBrackets,
-            this.btnAutoIdent,
-            this.btnAutoIdentChars,
-            this.btnMarkChangedLines,
-            this.btnMouseHelp,
-            this.btnEvaluateByMouse,
+            this.toolStripSubMenuIntelliSense,
             this.toolStripSeparator11,
             this.btnUnderlinePascalKeywords,
             this.btnRedStringsHighlight,
@@ -589,7 +584,7 @@
 			this.btnHighlightCurrentLine.Image = ((System.Drawing.Image)(resources.GetObject("btnHighlightCurrentLine.Image")));
 			this.btnHighlightCurrentLine.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnHighlightCurrentLine.Name = "btnHighlightCurrentLine";
-			this.btnHighlightCurrentLine.Size = new System.Drawing.Size(428, 22);
+			this.btnHighlightCurrentLine.Size = new System.Drawing.Size(313, 22);
 			this.btnHighlightCurrentLine.Text = "Подсветка текущей строки";
 			this.btnHighlightCurrentLine.Click += new System.EventHandler(this.btnHighlightCurrentLine_Click);
 			// 
@@ -601,7 +596,7 @@
 			this.btnShowLineNumbers.Image = ((System.Drawing.Image)(resources.GetObject("btnShowLineNumbers.Image")));
 			this.btnShowLineNumbers.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnShowLineNumbers.Name = "btnShowLineNumbers";
-			this.btnShowLineNumbers.Size = new System.Drawing.Size(428, 22);
+			this.btnShowLineNumbers.Size = new System.Drawing.Size(313, 22);
 			this.btnShowLineNumbers.Text = "Показывать номера строк";
 			this.btnShowLineNumbers.Click += new System.EventHandler(this.btnShowLineNumbers_Click);
 			// 
@@ -611,7 +606,7 @@
 			this.btnShowFoldingLines.Image = ((System.Drawing.Image)(resources.GetObject("btnShowFoldingLines.Image")));
 			this.btnShowFoldingLines.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnShowFoldingLines.Name = "btnShowFoldingLines";
-			this.btnShowFoldingLines.Size = new System.Drawing.Size(428, 22);
+			this.btnShowFoldingLines.Size = new System.Drawing.Size(313, 22);
 			this.btnShowFoldingLines.Text = "Показывать линии действия блока";
 			this.btnShowFoldingLines.Click += new System.EventHandler(this.btnShowFoldingLines_Click);
 			// 
@@ -620,7 +615,7 @@
 			this.btnInvisibleChars.CheckOnClick = true;
 			this.btnInvisibleChars.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.btnInvisibleChars.Name = "btnInvisibleChars";
-			this.btnInvisibleChars.Size = new System.Drawing.Size(428, 22);
+			this.btnInvisibleChars.Size = new System.Drawing.Size(313, 22);
 			this.btnInvisibleChars.Text = "¶ Показывать непечатные символы";
 			this.btnInvisibleChars.Click += new System.EventHandler(this.btnInvisibleChars_Click);
 			// 
@@ -630,14 +625,14 @@
 			this.btnVerticalLineText.CheckOnClick = true;
 			this.btnVerticalLineText.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.btnVerticalLineText.Name = "btnVerticalLineText";
-			this.btnVerticalLineText.Size = new System.Drawing.Size(428, 22);
+			this.btnVerticalLineText.Size = new System.Drawing.Size(313, 22);
 			this.btnVerticalLineText.Text = "Вертикальная линия границы текста";
 			this.btnVerticalLineText.Click += new System.EventHandler(this.btnVerticalLineText_Click);
 			// 
 			// toolStripSeparator12
 			// 
 			this.toolStripSeparator12.Name = "toolStripSeparator12";
-			this.toolStripSeparator12.Size = new System.Drawing.Size(425, 6);
+			this.toolStripSeparator12.Size = new System.Drawing.Size(310, 6);
 			// 
 			// btnHighlightSameWords
 			// 
@@ -645,10 +640,26 @@
 			this.btnHighlightSameWords.CheckOnClick = true;
 			this.btnHighlightSameWords.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.btnHighlightSameWords.Name = "btnHighlightSameWords";
-			this.btnHighlightSameWords.Size = new System.Drawing.Size(428, 22);
+			this.btnHighlightSameWords.Size = new System.Drawing.Size(313, 22);
 			this.btnHighlightSameWords.Text = "Подсветка одинаковых слов";
 			this.btnHighlightSameWords.ToolTipText = "Подсвечивать слова в тексте, которые совпадают с текущим словом";
 			this.btnHighlightSameWords.Click += new System.EventHandler(this.btnHighlightSameWords_Click);
+			// 
+			// toolStripSubMenuIntelliSense
+			// 
+			this.toolStripSubMenuIntelliSense.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnSetIntelliSense,
+            this.btnMouseHelp,
+            this.btnAutoIdent,
+            this.btnMarkChangedLines,
+            this.btnAutoIdentChars,
+            this.btnIntelliSenseFunctions,
+            this.btnAutoCompleteBrackets,
+            this.btnEvaluateByMouse,
+            this.btnHints4CtrlSpace});
+			this.toolStripSubMenuIntelliSense.Name = "toolStripSubMenuIntelliSense";
+			this.toolStripSubMenuIntelliSense.Size = new System.Drawing.Size(313, 22);
+			this.toolStripSubMenuIntelliSense.Text = "IntelliSense";
 			// 
 			// btnSetIntelliSense
 			// 
@@ -660,6 +671,47 @@
 			this.btnSetIntelliSense.Text = "Подсказки IntelliSense";
 			this.btnSetIntelliSense.ToolTipText = "Включение/Отключение подсказок ключевых слов и методов";
 			this.btnSetIntelliSense.Click += new System.EventHandler(this.btnSetIntelliSense_Click);
+			// 
+			// btnMouseHelp
+			// 
+			this.btnMouseHelp.Checked = true;
+			this.btnMouseHelp.CheckOnClick = true;
+			this.btnMouseHelp.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.btnMouseHelp.Name = "btnMouseHelp";
+			this.btnMouseHelp.Size = new System.Drawing.Size(428, 22);
+			this.btnMouseHelp.Text = "Подсказки при наведении мышкой";
+			this.btnMouseHelp.Click += new System.EventHandler(this.btnMouseHelp_Click);
+			// 
+			// btnAutoIdent
+			// 
+			this.btnAutoIdent.Checked = true;
+			this.btnAutoIdent.CheckOnClick = true;
+			this.btnAutoIdent.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.btnAutoIdent.Name = "btnAutoIdent";
+			this.btnAutoIdent.Size = new System.Drawing.Size(428, 22);
+			this.btnAutoIdent.Text = "Автоматический отступ";
+			this.btnAutoIdent.Click += new System.EventHandler(this.btnAutoIdent_Click);
+			// 
+			// btnMarkChangedLines
+			// 
+			this.btnMarkChangedLines.Checked = true;
+			this.btnMarkChangedLines.CheckOnClick = true;
+			this.btnMarkChangedLines.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.btnMarkChangedLines.Name = "btnMarkChangedLines";
+			this.btnMarkChangedLines.Size = new System.Drawing.Size(428, 22);
+			this.btnMarkChangedLines.Text = "Помечать изменённые строки";
+			this.btnMarkChangedLines.Click += new System.EventHandler(this.btnMarkChangedLines_Click);
+			// 
+			// btnAutoIdentChars
+			// 
+			this.btnAutoIdentChars.Checked = true;
+			this.btnAutoIdentChars.CheckOnClick = true;
+			this.btnAutoIdentChars.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.btnAutoIdentChars.Name = "btnAutoIdentChars";
+			this.btnAutoIdentChars.Size = new System.Drawing.Size(428, 22);
+			this.btnAutoIdentChars.Text = "Автоматический отступ конструкций";
+			this.btnAutoIdentChars.Visible = false;
+			this.btnAutoIdentChars.Click += new System.EventHandler(this.btnAutoIdentChars_Click);
 			// 
 			// btnIntelliSenseFunctions
 			// 
@@ -682,47 +734,6 @@
 			this.btnAutoCompleteBrackets.Text = "Автозавершение скобок и кавычек";
 			this.btnAutoCompleteBrackets.Click += new System.EventHandler(this.btnAutoCompleteBrackets_Click);
 			// 
-			// btnAutoIdent
-			// 
-			this.btnAutoIdent.Checked = true;
-			this.btnAutoIdent.CheckOnClick = true;
-			this.btnAutoIdent.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnAutoIdent.Name = "btnAutoIdent";
-			this.btnAutoIdent.Size = new System.Drawing.Size(428, 22);
-			this.btnAutoIdent.Text = "Автоматический отступ";
-			this.btnAutoIdent.Click += new System.EventHandler(this.btnAutoIdent_Click);
-			// 
-			// btnAutoIdentChars
-			// 
-			this.btnAutoIdentChars.Checked = true;
-			this.btnAutoIdentChars.CheckOnClick = true;
-			this.btnAutoIdentChars.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnAutoIdentChars.Name = "btnAutoIdentChars";
-			this.btnAutoIdentChars.Size = new System.Drawing.Size(428, 22);
-			this.btnAutoIdentChars.Text = "Автоматический отступ конструкций";
-			this.btnAutoIdentChars.Visible = false;
-			this.btnAutoIdentChars.Click += new System.EventHandler(this.btnAutoIdentChars_Click);
-			// 
-			// btnMarkChangedLines
-			// 
-			this.btnMarkChangedLines.Checked = true;
-			this.btnMarkChangedLines.CheckOnClick = true;
-			this.btnMarkChangedLines.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnMarkChangedLines.Name = "btnMarkChangedLines";
-			this.btnMarkChangedLines.Size = new System.Drawing.Size(428, 22);
-			this.btnMarkChangedLines.Text = "Помечать изменённые строки";
-			this.btnMarkChangedLines.Click += new System.EventHandler(this.btnMarkChangedLines_Click);
-			// 
-			// btnMouseHelp
-			// 
-			this.btnMouseHelp.Checked = true;
-			this.btnMouseHelp.CheckOnClick = true;
-			this.btnMouseHelp.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnMouseHelp.Name = "btnMouseHelp";
-			this.btnMouseHelp.Size = new System.Drawing.Size(428, 22);
-			this.btnMouseHelp.Text = "Подсказки при наведении мышкой";
-			this.btnMouseHelp.Click += new System.EventHandler(this.btnMouseHelp_Click);
-			// 
 			// btnEvaluateByMouse
 			// 
 			this.btnEvaluateByMouse.Checked = true;
@@ -733,10 +744,18 @@
 			this.btnEvaluateByMouse.Text = "Вычислять значение в режиме отладки при наведении мышкой";
 			this.btnEvaluateByMouse.Click += new System.EventHandler(this.btnEvaluateByMouse_Click);
 			// 
+			// btnHints4CtrlSpace
+			// 
+			this.btnHints4CtrlSpace.CheckOnClick = true;
+			this.btnHints4CtrlSpace.Name = "btnHints4CtrlSpace";
+			this.btnHints4CtrlSpace.Size = new System.Drawing.Size(428, 22);
+			this.btnHints4CtrlSpace.Text = "Подсказки только по Ctrl-Space";
+			this.btnHints4CtrlSpace.Click += new System.EventHandler(this.btnHints4CtrlSpace_Click);
+			// 
 			// toolStripSeparator11
 			// 
 			this.toolStripSeparator11.Name = "toolStripSeparator11";
-			this.toolStripSeparator11.Size = new System.Drawing.Size(425, 6);
+			this.toolStripSeparator11.Size = new System.Drawing.Size(310, 6);
 			// 
 			// btnUnderlinePascalKeywords
 			// 
@@ -744,7 +763,7 @@
 			this.btnUnderlinePascalKeywords.CheckOnClick = true;
 			this.btnUnderlinePascalKeywords.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.btnUnderlinePascalKeywords.Name = "btnUnderlinePascalKeywords";
-			this.btnUnderlinePascalKeywords.Size = new System.Drawing.Size(428, 22);
+			this.btnUnderlinePascalKeywords.Size = new System.Drawing.Size(313, 22);
 			this.btnUnderlinePascalKeywords.Text = "Подчеркивать ключевые слова PascalScript";
 			this.btnUnderlinePascalKeywords.Click += new System.EventHandler(this.ToolStripMenuItemAltPascalScriptHighlight_Click);
 			// 
@@ -752,7 +771,7 @@
 			// 
 			this.btnRedStringsHighlight.CheckOnClick = true;
 			this.btnRedStringsHighlight.Name = "btnRedStringsHighlight";
-			this.btnRedStringsHighlight.Size = new System.Drawing.Size(428, 22);
+			this.btnRedStringsHighlight.Size = new System.Drawing.Size(313, 22);
 			this.btnRedStringsHighlight.Text = "Яркая подсветка строк";
 			this.btnRedStringsHighlight.Click += new System.EventHandler(this.btnRedStringsHighlight_Click);
 			// 
@@ -760,7 +779,7 @@
 			// 
 			this.btnToolStripMenuItemFONT.CheckOnClick = true;
 			this.btnToolStripMenuItemFONT.Name = "btnToolStripMenuItemFONT";
-			this.btnToolStripMenuItemFONT.Size = new System.Drawing.Size(428, 22);
+			this.btnToolStripMenuItemFONT.Size = new System.Drawing.Size(313, 22);
 			this.btnToolStripMenuItemFONT.Text = "Альтернативный шрифт RobotoMono";
 			this.btnToolStripMenuItemFONT.Click += new System.EventHandler(this.btnToolStripMenuItemFONT_Click);
 			// 
@@ -769,29 +788,29 @@
 			this.toolStripButtonHotKeys.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonHotKeys.Image")));
 			this.toolStripButtonHotKeys.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.toolStripButtonHotKeys.Name = "toolStripButtonHotKeys";
-			this.toolStripButtonHotKeys.Size = new System.Drawing.Size(428, 22);
+			this.toolStripButtonHotKeys.Size = new System.Drawing.Size(313, 22);
 			this.toolStripButtonHotKeys.Text = "Горячие клавиши ...";
 			this.toolStripButtonHotKeys.Click += new System.EventHandler(this.toolStripButtonHotKeys_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(425, 6);
-			// 
-			// btnAbout
-			// 
-			this.btnAbout.Name = "btnAbout";
-			this.btnAbout.Size = new System.Drawing.Size(428, 22);
-			this.btnAbout.Text = "О программе";
-			this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(310, 6);
 			// 
 			// btnUnload
 			// 
 			this.btnUnload.Image = global::HMSEditorNS.Properties.Resources.Output_16xLG;
 			this.btnUnload.Name = "btnUnload";
-			this.btnUnload.Size = new System.Drawing.Size(428, 22);
+			this.btnUnload.Size = new System.Drawing.Size(313, 22);
 			this.btnUnload.Text = "Выгрузить программу из памяти";
 			this.btnUnload.Click += new System.EventHandler(this.btnUnload_Click);
+			// 
+			// btnAbout
+			// 
+			this.btnAbout.Name = "btnAbout";
+			this.btnAbout.Size = new System.Drawing.Size(313, 22);
+			this.btnAbout.Text = "О программе";
+			this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
 			// 
 			// imageList1
 			// 
@@ -863,11 +882,6 @@
 		private System.Windows.Forms.ImageList imageList1;
 		private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButtonSettings;
 		private System.Windows.Forms.ToolStripMenuItem btnHighlightSameWords;
-		private System.Windows.Forms.ToolStripMenuItem btnSetIntelliSense;
-		private System.Windows.Forms.ToolStripMenuItem btnAutoCompleteBrackets;
-		private System.Windows.Forms.ToolStripMenuItem btnAutoIdent;
-		private System.Windows.Forms.ToolStripMenuItem btnAutoIdentChars;
-		private System.Windows.Forms.ToolStripMenuItem btnMarkChangedLines;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemCut;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemCopy;
@@ -884,7 +898,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
 		private System.Windows.Forms.ToolStripMenuItem btnRedStringsHighlight;
 		private System.Windows.Forms.ToolStripMenuItem btnToolStripMenuItemFONT;
-		private System.Windows.Forms.ToolStripMenuItem btnMouseHelp;
 		private System.Windows.Forms.ToolStripMenuItem btnVerticalLineText;
 		private System.Windows.Forms.ToolStripMenuItem btnInvisibleChars;
 		private System.Windows.Forms.ToolStripMenuItem btnHighlightCurrentLine;
@@ -895,7 +908,15 @@
 		private System.Windows.Forms.ToolStripMenuItem btnAbout;
 		private System.Windows.Forms.ToolStripMenuItem btnInsertTemplate;
 		private System.Windows.Forms.ToolStripMenuItem btnUnload;
+		private System.Windows.Forms.ToolStripMenuItem toolStripSubMenuIntelliSense;
+		private System.Windows.Forms.ToolStripMenuItem btnSetIntelliSense;
+		private System.Windows.Forms.ToolStripMenuItem btnMouseHelp;
+		private System.Windows.Forms.ToolStripMenuItem btnAutoIdent;
+		private System.Windows.Forms.ToolStripMenuItem btnMarkChangedLines;
+		private System.Windows.Forms.ToolStripMenuItem btnAutoIdentChars;
 		private System.Windows.Forms.ToolStripMenuItem btnIntelliSenseFunctions;
+		private System.Windows.Forms.ToolStripMenuItem btnAutoCompleteBrackets;
 		private System.Windows.Forms.ToolStripMenuItem btnEvaluateByMouse;
+		private System.Windows.Forms.ToolStripMenuItem btnHints4CtrlSpace;
 	}
 }

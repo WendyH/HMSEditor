@@ -40,7 +40,8 @@ namespace HMSEditorNS {
 
 						if (CheckKey(args, "-givemesomemagic")) {
 							// Запуск "тихого" режима
-							if (HMSEditor.WatchHMS())
+							HMSEditor.SilentMode = true;
+                            if (HMSEditor.WatchHMS())
 								Application.Run();
 						} else {
 							// Запуск в обычном режиме с появлением отдельного самостоятельного окна
