@@ -31,8 +31,8 @@
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.okButton = new System.Windows.Forms.Button();
 			this.btnUpdate = new System.Windows.Forms.Button();
-			this.labelNewVersion = new System.Windows.Forms.Label();
 			this.logo = new HMSEditorNS.Logo();
+			this.labelNewVersion = new System.Windows.Forms.LinkLabel();
 			this.SuspendLayout();
 			// 
 			// progressBar1
@@ -134,17 +134,6 @@
 			this.btnUpdate.Visible = false;
 			this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
 			// 
-			// labelNewVersion
-			// 
-			this.labelNewVersion.ForeColor = System.Drawing.Color.DarkRed;
-			this.labelNewVersion.Location = new System.Drawing.Point(11, 177);
-			this.labelNewVersion.Name = "labelNewVersion";
-			this.labelNewVersion.Size = new System.Drawing.Size(162, 32);
-			this.labelNewVersion.TabIndex = 37;
-			this.labelNewVersion.Text = "Есть новая версия 1.0.0.1";
-			this.labelNewVersion.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.labelNewVersion.Visible = false;
-			// 
 			// logo
 			// 
 			this.logo.BackColor = System.Drawing.Color.White;
@@ -155,11 +144,24 @@
 			this.logo.Size = new System.Drawing.Size(160, 160);
 			this.logo.TabIndex = 38;
 			// 
+			// labelNewVersion
+			// 
+			this.labelNewVersion.Location = new System.Drawing.Point(13, 180);
+			this.labelNewVersion.Name = "labelNewVersion";
+			this.labelNewVersion.Size = new System.Drawing.Size(160, 29);
+			this.labelNewVersion.TabIndex = 39;
+			this.labelNewVersion.TabStop = true;
+			this.labelNewVersion.Text = "Есть новая версия 1.0.0.1";
+			this.labelNewVersion.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.labelNewVersion.Visible = false;
+			this.labelNewVersion.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.labelNewVersion_LinkClicked);
+			// 
 			// AboutDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(500, 244);
+			this.Controls.Add(this.labelNewVersion);
 			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.labelProductName);
 			this.Controls.Add(this.labelVersion);
@@ -169,7 +171,6 @@
 			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.btnUpdate);
-			this.Controls.Add(this.labelNewVersion);
 			this.Controls.Add(this.logo);
 			this.DoubleBuffered = true;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -197,7 +198,7 @@
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.Button okButton;
 		private System.Windows.Forms.Button btnUpdate;
-		private System.Windows.Forms.Label labelNewVersion;
 		private Logo logo;
+		private System.Windows.Forms.LinkLabel labelNewVersion;
 	}
 }

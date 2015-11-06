@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Diagnostics;
 using System.Threading;
+using System.IO;
 
 namespace HMSEditorNS {
 	partial class AboutDialog: Form {
@@ -13,13 +14,14 @@ namespace HMSEditorNS {
 		private static string tmpFile = "";
 		private bool   ExistUpdate    = false;
 		private System.Threading.Timer UpdateTimer = new System.Threading.Timer(UpdateTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
+		private string UpdateInfo     = "";
 
 		public AboutDialog() {
 			ThisDialog = this;
 			InitializeComponent();
 			
 			tmpFile = HMS.DownloadDir + HMS.DS + "HMSEditor.exe";
-            this.Text = string.Format("О программе {0}", AssemblyTitle);
+			this.Text = string.Format("О программе {0}", AssemblyTitle);
 			this.labelProductName.Text = AssemblyProduct;
 			this.labelVersion      .Text = string.Format("Версия {0}", AssemblyVersion);
 			this.labelCopyright    .Text = AssemblyCopyright;
@@ -102,9 +104,11 @@ namespace HMSEditorNS {
 		}
 
 		private static void UpdateTimer_Task(object state) {
-			string lastVersion = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor);
+			string info;
+			string lastVersion = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor, out info);
 			ThisDialog.Invoke((MethodInvoker)delegate {
-				ThisDialog.CheckUpdate(lastVersion);
+				ThisDialog.UpdateInfo = info;
+                ThisDialog.CheckUpdate(lastVersion);
 			});
 		}
 
@@ -117,9 +121,8 @@ namespace HMSEditorNS {
 			Process.Start(linkLabel1.Text);
 		}
 
-
 		private void btnUpdate_Click(object sender, EventArgs e) {
-            if (HMSEditor.NeedRestart && AuthenticodeTools.IsTrusted(HMSEditor.NeedCopyNewFile)) {
+			if (HMSEditor.NeedRestart && AuthenticodeTools.IsTrusted(HMSEditor.NeedCopyNewFile)) {
 				string msg = "При перезапуске программы будет возвращён встроенный редактор.\n" +
 							 "После перезапуска, чтобы вернуться к данному альтернативному редактору, " +
 							 "достаточно закрыть окно и открыть редактирование скриптов заного. ";
@@ -129,10 +132,25 @@ namespace HMSEditorNS {
 				string rargs = "/C ping 127.0.0.1 -n 3 && Copy /Y \"" + HMSEditor.NeedCopyNewFile + "\" \"" + Application.ExecutablePath + "\" && \"" + Application.ExecutablePath + "\" "+HMS.StartArgs;
 				ProcessStartInfo Info = new ProcessStartInfo();
 				Info.Arguments      = rargs;
-                Info.WindowStyle    = ProcessWindowStyle.Hidden;
+				Info.WindowStyle    = ProcessWindowStyle.Hidden;
 				Info.CreateNoWindow = true;
 				Info.FileName       = "cmd.exe";
-				Process.Start(Info);
+				if (NeedPrivilegies()) {
+					msg = "Текущая программа находится в каталоге, где нужны привилегии для записи файлов.\n" +
+					      "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
+					      "который данными привилегиями обладает.";
+					MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					Info.Verb = "runas";
+				}
+				try {
+					Process.Start(Info);
+				} catch {
+					msg = "Ошибка обновления программы.\n" +
+					      "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
+					      "Автоматическое обновление не произошло.";
+					MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+					return;
+				}
 				Application.Exit();
 				Close();
 				return;
@@ -143,14 +161,25 @@ namespace HMSEditorNS {
 			GitHub.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
 
 			GitHub.DownloadLatestReleaseAsync(tmpFile);
-        }
+		}
+
+		private bool NeedPrivilegies() {
+			string file = Application.ExecutablePath + ".TestPrivilegies";
+            try {
+				File.Create(file);
+				File.Delete(file);
+			} catch {
+				return true;
+			}
+			return false;
+		}
 
 		public void SetNeedRestart() {
 			labelNewVersion.Text    = "Требуется перезапуск программы";
 			labelNewVersion.Visible = true;
 			btnUpdate.Text          = "Перезапустить";
 			btnUpdate.Visible       = true;
-        }
+		}
 
 		private static void InstallNewFile() {
 			HMSEditor.NeedRestart     = true;
@@ -163,9 +192,9 @@ namespace HMSEditorNS {
 			if (!AuthenticodeTools.IsTrusted(tmpFile)) {
 				string msg = "У полученного файла не верная цифровая подпись. Обновление прервано.\n\n"+
 				             "Это может означать, что произошла подмена файла или автор забыл подписать файл. "+
-							 "Может быть временные проблемы с интернетом. В любом случае, можно попробовать " +
-							 "посетить пару мест, где знают о существовании данной программы и спросить там:\n" +
-							 "https://homemediaserver.ru/forum\nhttps://hms.lostcut.net\nhttps://github.com/WendyH/HMSEditor/issues";
+				             "Может быть временные проблемы с интернетом. В любом случае, можно попробовать " +
+				             "посетить пару мест, где знают о существовании данной программы и спросить там:\n" +
+				             "https://homemediaserver.ru/forum\nhttps://hms.lostcut.net\nhttps://github.com/WendyH/HMSEditor/issues";
 				MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
 				return;
 			}
@@ -177,5 +206,11 @@ namespace HMSEditorNS {
 			progress.Value   = (int)e.BytesReceived;
 		}
 
+		private void labelNewVersion_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			if (UpdateInfo.Length == 0) return;
+			frmUpdateInfoDialog form = new frmUpdateInfoDialog();
+			form.Info = UpdateInfo;
+			form.ShowDialog();
+        }
 	}
 }

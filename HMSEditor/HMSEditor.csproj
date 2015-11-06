@@ -122,6 +122,12 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FormUpdateInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormUpdateInfo.Designer.cs">
+      <DependentUpon>FormUpdateInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="GitHub.cs" />
     <Compile Include="HmsToolTip.cs">
       <SubType>Component</SubType>
@@ -211,6 +217,9 @@
     <EmbeddedResource Include="FCTB\GoToForm.resx" />
     <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx" />
     <EmbeddedResource Include="FCTB\ReplaceForm.resx" />
+    <EmbeddedResource Include="FormUpdateInfo.resx">
+      <DependentUpon>FormUpdateInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
