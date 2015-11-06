@@ -25,6 +25,7 @@ namespace HMSEditorNS {
 			// Без указанного UserAgent github возвращает ошибку
 			client.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko");
 			client.Headers.Set(HttpRequestHeader.Accept   , "application/vnd.github.v3+json");
+			client.Encoding = System.Text.Encoding.UTF8;
 			initialized = true;
         }
 
@@ -34,21 +35,29 @@ namespace HMSEditorNS {
 			try {
 				string jsonInfo = client.DownloadString(giturl + userRepo);
 				lastDate = regexUpdDate.Match(jsonInfo).Groups[1].Value;
-			} catch (Exception e) {
-				HMS.LogError(e.ToString());
+			} catch {
 			}
 			return lastDate;
         }
 
-		public static string GetLatestReleaseVersion(string userRepo) {
+		public static string GetLatestReleaseVersion(string userRepo, out string updateInfo) {
 			if (!initialized) Init();
 			string version = "";
-			try {
+			updateInfo = "";
+            try {
 				string jsonInfo = client.DownloadString(giturl + userRepo + "/releases");
 				version    = regexVersion.Match(jsonInfo).Groups[1].Value;
 				ReleaseUrl = regexRelease.Match(jsonInfo).Groups[1].Value;
-			} catch (Exception e) {
-				HMS.LogError(e.ToString());
+				MatchCollection mc = Regex.Matches(jsonInfo, @"""tag_name""\s*?:\s*?""(.*?)"".*?""body""\s*?:\s*?""(.*?[^\\])""");
+				string verTag, verInfo;
+                foreach (Match m in mc) {
+					verTag  = m.Groups[1].Value;
+					verInfo = m.Groups[2].Value;
+					if (verInfo=="\"},{") continue;
+					updateInfo += "v"+verTag+"\r\n-------------------------\r\n"+verInfo+"\r\n\r\n";
+                }
+				updateInfo = updateInfo.Replace("\\r", "\r").Replace("\\n", "\n").Replace("\\", "");
+            } catch {
 			}
 			return version;
 		}
