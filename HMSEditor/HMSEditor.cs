@@ -306,7 +306,7 @@ namespace HMSEditorNS {
 			InitializeComponent();
 			SetAutoCompleteMenu();
 			Editor.LostFocus += Editor_LostFocus;
-			this.tsMain.Visible = false; // for attached default is not visible, restore saved value in LoadSettings()
+			//tsMain.Visible = false; // for attached default is not visible, restore saved value in LoadSettings()
 		}
 
 		// Fields
@@ -1234,7 +1234,7 @@ namespace HMSEditorNS {
 		}
 
 		private void EditorMouseClick(object sender, MouseEventArgs e) {
-			if (e.X < (Editor.LeftIndent - 8)) {
+			if (e.X < (Editor.LeftIndent - 12)) {
 				int iFirstLine = Editor.YtoLineIndex();
 				int yFirstLine = Editor.LineInfos[iFirstLine].startY - Editor.VerticalScroll.Value;
                 int iLine = (int)((e.Y - yFirstLine) / (Editor.Font.Height - 1)) + iFirstLine;

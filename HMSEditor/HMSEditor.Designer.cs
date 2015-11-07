@@ -726,9 +726,7 @@
 			// 
 			// btnAutoCompleteBrackets
 			// 
-			this.btnAutoCompleteBrackets.Checked = true;
 			this.btnAutoCompleteBrackets.CheckOnClick = true;
-			this.btnAutoCompleteBrackets.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.btnAutoCompleteBrackets.Name = "btnAutoCompleteBrackets";
 			this.btnAutoCompleteBrackets.Size = new System.Drawing.Size(428, 22);
 			this.btnAutoCompleteBrackets.Text = "Автозавершение скобок и кавычек";
