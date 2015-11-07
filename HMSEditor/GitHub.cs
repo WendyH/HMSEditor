@@ -10,7 +10,7 @@ namespace HMSEditorNS {
 	public static class GitHub {
 		internal static WebClient client = new WebClient();
 		internal static string      giturl = "https://api.github.com/repos/";
-		internal static Regex regexUpdDate = new Regex(@"""updated_at""\s*?:\s*?""(.*?)""", RegexOptions.Compiled);
+		internal static Regex regexUpdDate = new Regex(@"""pushed_at""\s*?:\s*?""(.*?)""" , RegexOptions.Compiled);
 		internal static Regex regexVersion = new Regex(@"""tag_name""\s*?:\s*?""(.*?)"""  , RegexOptions.Compiled);
 		internal static Regex regexRelease = new Regex(@"""browser_download_url""\s*?:\s*?""([^""]+HMSEditor.exe)""", RegexOptions.Compiled);
 		internal static bool  initialized  = false;
