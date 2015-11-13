@@ -10,7 +10,6 @@ using System.IO;
 using FastColoredTextBoxNS;
 using System.Threading;
 using System.Windows.Forms;
-using System.Net;
 using Ionic.Zip;
 
 namespace HMSEditorNS {
@@ -28,7 +27,7 @@ namespace HMSEditorNS {
 		public const int Event     = 11;
 	}
 
-	public class HMSItem: FastColoredTextBoxNS.AutocompleteItem {
+	public class HMSItem: AutocompleteItem {
 		public string  Help      = "";
 		public string  Type      = "";
 		public bool    Global    = false;
@@ -36,8 +35,10 @@ namespace HMSEditorNS {
 		public string  Value     = "";
 		public bool    IsClass   = false;
 		public List<string> Params = new List<string>();
+		public int PositionReal  = 0;
 		public int PositionStart = 0;
 		public int PositionEnd   = 0;
+		public string  Filter    = "";
 
 		// constructors
 		public HMSItem() {
@@ -168,6 +169,18 @@ namespace HMSEditorNS {
 
 	}
 
+	public class HMSItemComparer: IComparer<HMSItem> {
+		private readonly string name;
+
+		public HMSItemComparer(string name) {
+			this.name = name.ToLower();
+		}
+
+		public int Compare(HMSItem item1, HMSItem item2) {
+			return item1.MenuText.ToLower().CompareTo(name);
+		}
+	}
+
 	public class AutocompleteItems: List<HMSItem> {
 		public int LastEndPosition { get { if (Count > 0) return this[Count - 1].PositionEnd; return 0; } }
 
@@ -182,9 +195,7 @@ namespace HMSEditorNS {
 		}
 
 		public bool ContainsName(string name) {
-			name = name.Trim().ToLower();
-			foreach (HMSItem o in this) if (o.MenuText.ToLower() == name) return true;
-			return false;
+			return BinarySearch(new HMSItem(), new HMSItemComparer(name)) >= 0;
 		}
 
 		public HMSItem this[string name] {
@@ -198,9 +209,9 @@ namespace HMSEditorNS {
 		public AutocompleteItems GetFilteredList(string type) {
 			AutocompleteItems list = new AutocompleteItems();
 			type = type.ToLower();
-            foreach (var item in this) if (item.Type.ToLower()==type) list.Add(item);
+			foreach (var item in this) if (item.Type.ToLower()==type) list.Add(item);
 			return list;
-        }
+		}
 
 	}
 	
@@ -280,6 +291,7 @@ namespace HMSEditorNS {
 		public static string NotFoundedType   = "|TFloat|TSizeConstraints|THelpType|TMargins|TBasicAction|TBiDiMode|TDragKind|TDragMode|HDC|TFixed|TAutoComplete|TBevelEdges|TBevelKind|TBorderStyle|TImeMode|TScrollBarStyle|TPixelAccessMode|TArrayOfArrayOfFixedPoint|TArrayOfFixedPoint|TArrayOfArrayOfFloatPoint|TArrayOfFloatPoint|TFormBorderStyle|TDefaultMonitor|TIcon|TPadding|TPopupMode|TPrintScale|TEllipsisPosition|THotTrackStyles|TListItems|TMenuAutoFlag|TMenuItemAutoFlag|TMenuBreak|TOpenOptionsEx|TVerticalAlignment|TPopupAlignment|TMenuAnimation|TTrackButton|TArrayOfArrayOfArrayOfFixedPoint|TTBDrawingStyle|TEdgeBorders|TEdgeStyle|TGradientDirection|TTBGradientDrawingOptions|TPositionToolTip|TMultiSelectStyle|";
 		public static string CurrentParamType = "";
 
+		private static string ResourcePath = "HMSEditorNS.Resources.";
 		private static string workingdir = "";
 		internal static string WorkingDir {
 			get {
@@ -321,19 +333,24 @@ namespace HMSEditorNS {
 		public  static Templates Templates    = new Templates();
 		private static System.Threading.Timer DownloadTimer = new System.Threading.Timer(DownloadTemplateUpdates_Task, null, Timeout.Infinite, Timeout.Infinite);
 
-		private static void DownloadTemplateUpdates_Task(object state) {
+		public static void DownloadTemplates(string lastUpdateDate) {
 			string tmpFile = DownloadDir + DS + "HMSEditorTemplates.zip";
+			GitHub.DownloadLegacyArchive(GitHubTemplates, tmpFile);
+			if (ExtractZip(tmpFile, true)) {
+				HMSEditor.Settings.Set("TemplateLastUpdate", lastUpdateDate, "Common");
+				HMSEditor.Settings.Save();
+				LoadTemplates();
+			}
+		}
+
+		private static void DownloadTemplateUpdates_Task(object state) {
+			string info = "";
 			try {
 				string lastUpdateStored = HMSEditor.Settings.Get("TemplateLastUpdate", "Common", "");
-				string lastUpdateDate   = GitHub.GetRepoUpdatedDate(GitHubTemplates);
+				string lastUpdateDate   = GitHub.GetRepoUpdatedDate(GitHubTemplates, out info);
 				if (lastUpdateStored != lastUpdateDate) {
-					GitHub.DownloadLegacyArchive(GitHubTemplates, tmpFile);
-					if (ExtractZip(tmpFile, true)) {
-						HMSEditor.Settings.Set("TemplateLastUpdate", lastUpdateDate, "Common");
-						HMSEditor.Settings.Save();
-						LoadTemplates();
-					}
-				}
+					DownloadTemplates(lastUpdateDate);
+                }
 			} catch (Exception e) {
 				HMS.LogError(e.ToString());
 			}
@@ -419,12 +436,12 @@ namespace HMSEditorNS {
 				if (resetWorkingDirIfError) workingdir = "";
 				LogError(e.ToString());
 			}
-        }
+		}
 
 		public static void InitAndLoadHMSKnowledgeDatabase() {
 			CreateIfNotExistDirectory(WorkingDir, true);
 			CreateIfNotExistDirectory(WorkingDir + DS + "Templates");
-			GitHub.Init();
+
 			LoadTemplates(); // Сначала загружаем шаблоны, какие есть
 
 			// Проверяем, когда последний раз запрашивали версию шаблонов на Github
@@ -432,13 +449,12 @@ namespace HMSEditorNS {
 			string nowDate   = DateTime.Now.ToString("yyyy.MM.dd");
 			if (lastCheck != nowDate) {
 				// Если сегодня ещё не проверяли - запускаем фоновое обновление шаблонов с Github
-				DownloadTimer.Change(0, Timeout.Infinite);
+				//DownloadTimer.Change(0, Timeout.Infinite);
 				HMSEditor.Settings.Set("TemplateLastCheck", nowDate, "Common");
 				HMSEditor.Settings.Save();
 			}
 
 			// Загружаем базу данных знаний о HMS (классы, типы, функции и т.п.) из ресурсов
-			string resourcePath = "HMSEditorNS.Resources.";
 			HmsTypesString    = Regex.Replace(HmsTypesStringWithHelp, "{.*?}", "").ToLower();
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			HMSItem  item     = null;
@@ -450,7 +466,7 @@ namespace HMSEditorNS {
 			Stream stream = null;
 			try {
 				// Load classes items
-				stream = assembly.GetManifestResourceStream(resourcePath + "hms_classes.txt");
+				stream = assembly.GetManifestResourceStream(ResourcePath + "hms_classes.txt");
 				using (StreamReader reader = new StreamReader(stream)) {
 					stream = null;
 					ClassesString = "|";
@@ -537,7 +553,7 @@ namespace HMSEditorNS {
 				}
 
 				// Load a built-in Types (Enumerates)
-				stream = assembly.GetManifestResourceStream(resourcePath + "hms_types.txt");
+				stream = assembly.GetManifestResourceStream(ResourcePath + "hms_types.txt");
 				using (StreamReader reader = new StreamReader(stream)) {
 					stream = null; string line; HMSClassInfo hmsType = null;
 					while ((line = reader.ReadLine()) != null) {
@@ -570,17 +586,17 @@ namespace HMSEditorNS {
 			} finally {
 				if (stream != null)
 					stream.Dispose();
-            }
+			}
 
 			// Load a built-in Functions and Procedures items
-			BuildAutocompleteItemsFromResourse(resourcePath + "hms_func.txt", Images.Procedure, "", ItemsFunction, DefKind.Function);
+			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_func.txt", Images.Procedure, "", ItemsFunction, DefKind.Function);
 			foreach(var itemFunc in ItemsFunction) { if (itemFunc.Type.Length > 0) itemFunc.ImageIndex = Images.Function; }
 
 			// Load a built-in Variables
-			BuildAutocompleteItemsFromResourse(resourcePath + "hms_vars.txt"     , Images.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
+			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_vars.txt"     , Images.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
 				
 			// Load a built-in Constants
-			BuildAutocompleteItemsFromResourse(resourcePath + "hms_constants.txt", Images.Enum , "Встроенная константа" , ItemsConstant, DefKind.Constant);
+			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_constants.txt", Images.Enum , "Встроенная константа" , ItemsConstant, DefKind.Constant);
 
 			foreach(var info in HmsTypes) {
 				foreach(var typeitem in info.MemberItems) {
@@ -598,7 +614,7 @@ namespace HMSEditorNS {
 
 			ClassesString  += NotFoundedType.ToLower();
 			HmsTypesString += "";
-        }
+		}
 
 		private static bool KnownType(string type) {
 			if (type.Length < 1) return true;
@@ -610,23 +626,26 @@ namespace HMSEditorNS {
 
 		private static void BuildAutocompleteItemsFromResourse(string file, int imageIndex, string toolTipText, AutocompleteItems itemsList, DefKind kind) {
 			string   section  = "";
+			string   filter   = "";
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			Stream   stream   = assembly.GetManifestResourceStream(file);
 			try {
 				using (StreamReader reader = new StreamReader(stream)) {
-					stream = null; string line; HMSItem item = null;
-
+					stream = null; string line; HMSItem item = null; Match m;
 					while ((line = reader.ReadLine()) != null) {
-						Match m = Regex.Match(line, @"^\*\s*?\[(.*)\]"); if (m.Success) { section = m.Groups[1].Value.Trim(); continue; }
-						if (line.StartsWith("*") || (line.Trim().Length == 0)) continue; // Skip comments and blank lines
+						m = Regex.Match(line, @"^\*\s*?\[(.*)\]"    ); if (m.Success) { section = m.Groups[1].Value.Trim(); continue; }
+						m = Regex.Match(line, @"^\*sm\w+\s*?<(.*?)>"); if (m.Success) { filter  = m.Groups[1].Value.Trim(); continue; }
+						if (filter == "-") continue;
+                        if (line.StartsWith("*") || (line.Trim().Length == 0)) continue; // Skip comments and blank lines
 						int indent = line.Length - line.TrimStart().Length;
 						if (indent == 0) {
 							item = GetHmsItemFromLine(line);
 							item.ImageIndex  = imageIndex;
 							item.ToolTipText = toolTipText + ((section.Length > 0) ? (" ("+ section + ")") : "");
 							item.Kind        = kind;
-							if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
-							itemsList.Add(item);
+							item.Filter      = filter;
+                            if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
+                            itemsList.Add(item);
 						} else if ((indent == 2) || (line[0] == '\t')) {
 							// it's help for parameters of last method
 							if (itemsList.Count > 0) {
@@ -674,6 +693,22 @@ namespace HMSEditorNS {
 		public static string GetTextWithoutBrackets(string text) {
 			text = GetTextWithoutBlock(text, regexBracketsR, "(");
 			return GetTextWithoutBlock(text, regexBracketsQ, "[");
+		}
+
+		public static string ReadTextFromResource(string file) {
+			string text = "";
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			Stream stream = assembly.GetManifestResourceStream(ResourcePath + file);
+			try {
+				using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+					stream = null;
+					text = reader.ReadToEnd();
+				}
+			} finally {
+				if (stream != null)
+					stream.Dispose();
+			}
+			return text;
 		}
 
 		private static string GetTextWithoutBlock(string text, Regex regex, string startBlock) {

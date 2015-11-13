@@ -18,6 +18,10 @@ namespace HMSEditorNS {
 		/// </summary>
 		/// <param name="timeOut">Время в миллисекундах, которое команда получения мутекса готова ждать (Timeout)</param>
 		public SingleGlobalInstance(int timeOut) {
+			CreateMutex(timeOut);
+		}
+
+		public void CreateMutex(int timeOut = 100) {
 			// Получаем GUID и формируем имя мутекса
 			string appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), false).GetValue(0)).Value.ToString();
 			string mutexId = string.Format("Global\\{{{0}}}", appGuid);

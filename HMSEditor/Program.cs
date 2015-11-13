@@ -2,6 +2,7 @@
 using System;
 using System.Windows.Forms; // Application
 using System.Reflection;    // Assembly
+using System.Diagnostics;
 
 namespace HMSEditorNS {
 	static class Program {
@@ -19,46 +20,53 @@ namespace HMSEditorNS {
 			// Класс SingleGlobalInstance используется для проверки, не запущена ли уже другая копия программы
 			using (SingleGlobalInstance instance = new SingleGlobalInstance(1000)) {
 				if (!instance.Success) {
-					MessageBox.Show("HMS Editor уже запущен!", HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					string msg = "HMS Editor уже запущен!\n\n"+
+					             "Завершить запущенные процессы и продолжить работу?";
+					DialogResult answer = MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+					if (answer == DialogResult.No) return;
 
-				} else {
-					// Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
-					AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+					CloseAllOtherHMSEditors();
+					instance.CreateMutex();
+				}
+				// Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
+				AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
-					try {
-						Application.EnableVisualStyles();
-						Application.SetCompatibleTextRenderingDefault(false);
+				try {
+					SetAllowUnsafeHeaderParsing();
+					Application.EnableVisualStyles();
+					Application.SetCompatibleTextRenderingDefault(false);
 
-						// Загружаем встроенные шрифты
-						HMS.AddFontFromResource("RobotoMono-Regular.ttf");
-						HMS.AddFontFromResource("Roboto-Regular.ttf");
+					// Загружаем встроенные шрифты
+					HMS.AddFontFromResource("RobotoMono-Regular.ttf");
+					HMS.AddFontFromResource("Roboto-Regular.ttf");
 
-						// Заполняем базу знаний функций, классов, встроенных констант и переменных...
-						HMS.InitAndLoadHMSKnowledgeDatabase();
+					// Заполняем базу знаний функций, классов, встроенных констант и переменных...
+					HMS.InitAndLoadHMSKnowledgeDatabase();
 
-						HMSEditor.DebugMe = CheckKey(args, "-debugga");
+					HMSEditor.DebugMe = CheckKey(args, "-debugga");
 
-						if (CheckKey(args, "-givemesomemagic")) {
-							// Запуск "тихого" режима
-							HMSEditor.SilentMode = true;
-                            if (HMSEditor.WatchHMS())
-								Application.Run();
-						} else {
-							// Запуск в обычном режиме с появлением отдельного самостоятельного окна
-							Application.Run(new FormMain());
-						}
-
-						// Проверяем, были ли выполнены все действия при выходе (снятие хуков и проч.)
-						if (!HMSEditor.Exited) HMSEditor.Exit();
-
-					} catch (Exception e) {
-						MessageBox.Show("Очень жаль, но работа программы невозможна.\n\n"+ e.ToString(), HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-						HMS.LogError(e.ToString());
-
+					if (CheckKey(args, "-givemesomemagic")) {
+						// Запуск "тихого" режима
+						HMSEditor.SilentMode = true;
+						if (HMSEditor.WatchHMS())
+							Application.Run(new HMSEditorAppContext());
+					} else {
+						// Запуск в обычном режиме с появлением отдельного самостоятельного окна
+						Application.Run(new FormMain());
 					}
 
+					// Проверяем, были ли выполнены все действия при выходе (снятие хуков и проч.)
+					if (!HMSEditor.Exited) HMSEditor.Exit();
+
+				} catch (Exception e) {
+					MessageBox.Show("Очень жаль, но работа программы невозможна.\n\n"+ e.ToString(), HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					HMS.LogError(e.ToString());
+
 				}
+
+				
 			}
+
 		}
 
 		/// <summary>
@@ -92,5 +100,57 @@ namespace HMSEditorNS {
 			}
 		}
 
+		/// <summary>
+		/// Контекст для перехвата и "правильного" завершения процесса без главного окна
+		/// </summary>
+		class HMSEditorAppContext: ApplicationContext {
+			public HMSEditorAppContext() {
+				Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
+			}
+			private void OnApplicationExit(object sender, EventArgs e) {
+				if (!HMSEditor.Exited) HMSEditor.Exit();
+			}
+		}
+
+		/// <summary>
+		/// Закрытие других запущенных процессов данного приложения
+		/// </summary>
+		public static void CloseAllOtherHMSEditors() {
+			Process[] processes = null;
+			int ourID = Process.GetCurrentProcess().Id;
+			try {
+				processes = Process.GetProcessesByName("HMSEditor");
+				foreach (Process p in processes) {
+					if (p.Id == ourID) continue; // Себя по ошибке бы не прибить
+					if (p.MainWindowHandle != IntPtr.Zero)
+						p.CloseMainWindow();
+					else
+						p.Kill();
+				}
+			} finally {
+				if (processes != null) {
+					foreach (Process p in processes)
+						p.Close();
+				}
+			}
+		}
+
+		public static bool SetAllowUnsafeHeaderParsing() {
+			Assembly aNetAssembly = Assembly.GetAssembly(typeof(System.Net.Configuration.SettingsSection));
+			if (aNetAssembly != null) {
+				Type aSettingsType = aNetAssembly.GetType("System.Net.Configuration.SettingsSectionInternal");
+				if (aSettingsType != null) {
+					object anInstance = aSettingsType.InvokeMember("Section", BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.NonPublic, null, null, new object[] { });
+					if (anInstance != null) {
+						FieldInfo aUseUnsafeHeaderParsing = aSettingsType.GetField("useUnsafeHeaderParsing", BindingFlags.NonPublic | BindingFlags.Instance);
+						if (aUseUnsafeHeaderParsing != null) {
+							aUseUnsafeHeaderParsing.SetValue(anInstance, true);
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
 	}
 }

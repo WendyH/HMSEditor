@@ -98,6 +98,7 @@
 			this.btnUnload = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+			this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
 			this.contextMenuStrip1.SuspendLayout();
@@ -177,6 +178,7 @@
 			this.Editor.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Editor_Scroll);
 			this.Editor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Editor_KeyDown);
 			this.Editor.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseClick);
+			this.Editor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
 			this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
 			// 
 			// contextMenuStrip1
@@ -190,12 +192,13 @@
             this.ToolStripMenuItemPaste,
             this.ToolStripMenuItemDelete,
             this.toolStripSeparator10,
+            this.ToolStripMenuItemSelectAll,
             this.ToolStripMenuItemBookmarkClear,
             this.ToolStripMenuItemClearBreakpoints,
             this.ToolStripMenuItemZoom100,
             this.btnInsertTemplate});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(228, 236);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(228, 280);
 			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
 			// 
 			// ToolStripMenuItemUndo
@@ -726,9 +729,7 @@
 			// 
 			// btnAutoCompleteBrackets
 			// 
-			this.btnAutoCompleteBrackets.Checked = true;
 			this.btnAutoCompleteBrackets.CheckOnClick = true;
-			this.btnAutoCompleteBrackets.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.btnAutoCompleteBrackets.Name = "btnAutoCompleteBrackets";
 			this.btnAutoCompleteBrackets.Size = new System.Drawing.Size(428, 22);
 			this.btnAutoCompleteBrackets.Text = "Автозавершение скобок и кавычек";
@@ -830,6 +831,13 @@
 			this.imageList1.Images.SetKeyName(11, "Event_594.png");
 			this.imageList1.Images.SetKeyName(12, "Template_Application_16xLG.png");
 			// 
+			// ToolStripMenuItemSelectAll
+			// 
+			this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
+			this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(227, 22);
+			this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
+			this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
+			// 
 			// HMSEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -918,5 +926,6 @@
 		private System.Windows.Forms.ToolStripMenuItem btnAutoCompleteBrackets;
 		private System.Windows.Forms.ToolStripMenuItem btnEvaluateByMouse;
 		private System.Windows.Forms.ToolStripMenuItem btnHints4CtrlSpace;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemSelectAll;
 	}
 }

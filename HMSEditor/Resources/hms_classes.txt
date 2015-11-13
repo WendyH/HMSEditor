@@ -1574,17 +1574,17 @@ THermiteKernel: TCustomKernel|Hermite-ядро фильтров преобраз
   property Bias: Integer|Смещение
   property Tension: Integer|Величина растяжения
   
-THmsHTTPMessage: TObject|HTTP сообщение
+THmsHTTPMessage: TObject|Класс для работы с HTTP сообщениями. Может использоваться в скриптах "Обработка HTTP-запросов", где встроенные переменные HttpRequest и HttpResponse имеют именно этот тип.
   function LoadContentFromFile(const aFileName: string; aSetLastModified: Boolean): Boolean|Загрузка содержания HTTP сообщения из файла
     aFileName - путь и имя файла, откуда будут загружены данные
     aSetLastModified - флаг определяющий, будет ли установлена дата последней модификации файла
   property Chunked: Boolean|Определяет блочность данных
-  property Content: String|Содержимое
-  property Header: String|Заголовок
+  property Content: String|Содержимое HTTP запроса или ответа
+  property Header: String|HTTP заголовки строкой
   property IsBinary: Boolean|Определяет, является ли сообщение бинарными данными
   property IsError: Boolean|Определяет, произошла ли ошибка
-  property LocalInfo: String|Локальная информация
-  property MessageHeader: THmsMessageHeader|HTTP заголовки (HTTP headers)
+  property LocalInfo: String|Локальная информация о статусе запроса
+  property MessageHeader: THmsMessageHeader|Объект HTTP заголовков
   property RemoteInfo: String|Информация, полученная от удалённого сервера
   
 THmsIMDBInfo: THmsIMDBItemList|Объект хранения информации с IMDB

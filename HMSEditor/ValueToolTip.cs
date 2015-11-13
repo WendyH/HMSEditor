@@ -24,6 +24,11 @@ namespace HMSEditorNS {
 			Initialize();
 		}
 
+		protected override void OnKeyDown(KeyEventArgs e) {
+			Close();
+			//base.OnKeyDown(e);
+		}
+
 		protected override void OnClosing(ToolStripDropDownClosingEventArgs e) {
 			timer.Stop();
 			base.OnClosing(e);

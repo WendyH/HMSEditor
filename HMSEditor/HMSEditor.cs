@@ -24,6 +24,7 @@ namespace HMSEditorNS {
 		public  static HMSEditor  ActiveEditor     = null;
 		public  static bool       NeedRestart      = false;
 		public  static string     NeedCopyNewFile  = "";
+		public  static bool   DisableUpdateFromHMS = false;
 		private static bool       MouseTimerEnable = false;
 
 		private static EditorList Attaches         = new EditorList();
@@ -35,11 +36,11 @@ namespace HMSEditorNS {
 		public static INI Settings = new INI(HMS.WorkingDir + HMS.DS + "HMSEditor.ini");
 
 		#region Regular Expressions Magnetic Field
-		private static Regex regexProceduresCPP    = new Regex(@"[\r\n]\s*?(?<type>\w+)\s+(\w+)\s*?\(", RegexOptions.Singleline | RegexOptions.Compiled);
-		private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(\w+)"    , RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex regexProceduresBasic  = new Regex(@"[\r\n]\s*?sub\s+(\w+)"               , RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex regexProceduresYAML   = new Regex(@"[\r\n]\s*?(\w+)\s*?:"                , RegexOptions.Singleline | RegexOptions.Compiled);
-		public  static Regex regexExcludeWords     = new Regex(@"\b(for|if|else|return|true|false|while|do)\b", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static Regex regexProceduresCPP    = new Regex(@"(?:^|[\r\n])\s*?(?<type>\w+)\s+(\w+)\s*?\("  , RegexOptions.Singleline | RegexOptions.Compiled);
+		private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(\w+)"            , RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static Regex regexProceduresBasic  = new Regex(@"(?:^|[\r\n])\s*?sub\s+(\w+)"                 , RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static Regex regexProceduresYAML   = new Regex(@"(?:^|[\r\n])\s*?(\w+)\s*?:"                  , RegexOptions.Singleline | RegexOptions.Compiled);
+		public  static Regex regexExcludeWords     = new Regex(@"\b(for|if|else|return|true|false|while|do)\b", RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static Regex regexDetectProcedure  = new Regex(@"\b(void|procedure)" , RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 		private static Regex regexPartOfLine       = new Regex(@"\b(.*?\s.*?\s.*?)\b", RegexOptions.Compiled);
 
@@ -161,6 +162,8 @@ namespace HMSEditorNS {
 				} else
 					editor.hWndComboBox   = hWndNew;
 				editor.DialogClass = classname;
+				NativeMethods.GetWindowText(hWndScriptDialog, sb, sb.Capacity);
+				editor.Filter = sb.ToString(); // Устанаваливаем текущий заголовок окна - используем как фильтр для видимости переменных
 				editor.TryAttach();
 			}
 		}
@@ -306,13 +309,15 @@ namespace HMSEditorNS {
 			InitializeComponent();
 			SetAutoCompleteMenu();
 			Editor.LostFocus += Editor_LostFocus;
-			this.tsMain.Visible = false; // for attached default is not visible, restore saved value in LoadSettings()
+			//tsMain.Visible = false; // for attached default is not visible, restore saved value in LoadSettings()
 		}
 
 		// Fields
 		public  bool   Locked          = false;
 		public  bool   Attached        = false;
 		public  bool   NeedCheckDebugState = false;
+		public  bool   NeedUpdateHmsCode   = false;
+		
 
 		private IntPtr hWndScriptDialog= IntPtr.Zero;
 		private IntPtr hWndScriptFrame = IntPtr.Zero;
@@ -352,6 +357,8 @@ namespace HMSEditorNS {
 		private bool TextBoxFindChanged = false;
 
 		public event EventHandler<TextChangedEventArgs> TextChangedDelayed;
+
+		public string Filter { get { return PopupMenu.Filter; } set { PopupMenu.Filter = value; } } // Фильтр для видимости переменных по заголовку окна
 
 		public bool AutoCompleteBrackets     { get { return Editor.AutoCompleteBrackets    ; } set { Editor.AutoCompleteBrackets    = value; } }
 		public bool AutoIdent                { get { return Editor.AutoIndent              ; } set { Editor.AutoIndent              = value; } }
@@ -737,12 +744,13 @@ namespace HMSEditorNS {
 		}
 
 		void GetTextFromMemo(bool firstInit = false) {
-			string text = NativeMethods.GetTextFromControl(hWndMemo);
+			if (DisableUpdateFromHMS) { DisableUpdateFromHMS=false; return; }
+            string text = NativeMethods.GetTextFromControl(hWndMemo);
 			if (text.Length > 0) {
 				if (LastTextLenght != text.Length) {
-					Editor.Text      = text;
+					Editor.Text = text;
 					Editor.IsChanged = false;
-				}
+                }
 				LastTextLenght = text.Length;
 				if (firstInit) {
 					Editor.ClearUndo();
@@ -754,7 +762,10 @@ namespace HMSEditorNS {
 
 		public void UpdateHmsCode() {
 			if (Attached && hWndMemo != IntPtr.Zero) {
-				NativeMethods.SetTextOfControl(hWndMemo, Editor.Text);
+				string text = Editor.Text;
+				if (LastTextLenght == text.Length) return;
+				if (text.EndsWith("\r\n")) text += "\r\n";
+                NativeMethods.SetTextOfControl(hWndMemo, text);
 				UpdateHmsCaret();
 			}
 		}
@@ -801,7 +812,7 @@ namespace HMSEditorNS {
 				Editor.Font = new Font(HMS.PFC.Families[1], 10f, FontStyle.Regular, GraphicsUnit.Point);
 			} else if (btnToolStripMenuItemFONT.Checked) {
 				btnToolStripMenuItemFONT_Click(null, new EventArgs());
-            }
+			}
 
 			sVal = Settings.Get("Zoom", section, "100");
 			Editor.Zoom = Int32.Parse(sVal);
@@ -994,8 +1005,10 @@ namespace HMSEditorNS {
 		private void Editor_TextChangedDelayed(object sender, TextChangedEventArgs e) {
 			Locked = true;       // Say to other processes we is busy - don't tuch us!
 			BuildFunctionList(); // Only when text changed - build the list of functions
-			UpdateHmsCode();
-			if (EnableFunctionToolTip && CheckFunctionHelp) CheckPositionIsInParametersSequence();
+			if (NeedUpdateHmsCode) UpdateHmsCode();
+			else
+				NeedUpdateHmsCode = true;
+            if ((EnableFunctionToolTip && CheckFunctionHelp) || Editor.ToolTip4Function.Visible) CheckPositionIsInParametersSequence();
 			if (TextChangedDelayed != null) TextChangedDelayed(this, e);
 			Locked = false;
 		}
@@ -1234,7 +1247,7 @@ namespace HMSEditorNS {
 		}
 
 		private void EditorMouseClick(object sender, MouseEventArgs e) {
-			if (e.X < (Editor.LeftIndent - 8)) {
+			if (e.X < (Editor.LeftIndent - 4)) {
 				int iFirstLine = Editor.YtoLineIndex();
 				int yFirstLine = Editor.LineInfos[iFirstLine].startY - Editor.VerticalScroll.Value;
                 int iLine = (int)((e.Y - yFirstLine) / (Editor.Font.Height - 1)) + iFirstLine;
@@ -1251,7 +1264,7 @@ namespace HMSEditorNS {
 					MouseLocation = e.Location;
 					ActiveEditor  = this;
 					if (ValueHint.Visible) ValueHint.Visible = false;
-                    MouseTimer.Change(500, Timeout.Infinite); // Show help tooltip from mouse cursor
+					MouseTimer.Change(500, Timeout.Infinite); // Show help tooltip from mouse cursor
 				}
 			}
 		}
@@ -1261,6 +1274,9 @@ namespace HMSEditorNS {
 		}
 
 		private void Editor_MouseClick(object sender, MouseEventArgs e) {
+		}
+
+		private void Editor_MouseDoubleClick(object sender, MouseEventArgs e) {
 			EditorMouseClick(sender, e);
 		}
 
@@ -1275,7 +1291,7 @@ namespace HMSEditorNS {
 
 		private void btnUnload_Click(object sender, EventArgs e) {
 			string msg = "Выйти и выгрузить редактор из памяти?\n\n" +
-						 "После выгрузки, открытие редактирования скриптов будет происходить в стандартном редакторе.\n";
+			             "После выгрузки, открытие редактирования скриптов будет происходить в стандартном редакторе.\n";
 			if (MessageBox.Show(msg, MsgCaption, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK) {
 				Exit();
 				Application.Exit();
@@ -1296,6 +1312,8 @@ namespace HMSEditorNS {
 			hWndEditor4EvalCreate = hWndScriptFrame;
 			if (!CheckCreatedEvaluateDialog()) {
 				_createEvalDlg   = true;
+				//NativeMethods.SendNotifyMessage(hWndScriptDialog, NativeMethods.WM_ACTIVATE);
+				//NativeMethods.SendNotifyKey(hWndMemo, NativeMethods.VK_F7 | NativeMethods.VK_CONTROL);
 				NativeMethods.SendNotifyMessage(hWndBntEval, NativeMethods.BM_CLICK);  // click on evaluate button
 			}
 			return EvalResult;
@@ -1355,6 +1373,7 @@ namespace HMSEditorNS {
 					item.ImageIndex    = (item.Kind == DefKind.Function) ? Images.Function : Images.Procedure;
 					item.ToolTipTitle  = name;
 					item.ToolTipText   = ((item.Kind == DefKind.Function) ? "Функция" : "Процедура") + " (объявлена в скрипте)";
+					item.PositionReal  = m.Index;
 					item.PositionStart = m.Groups[1].Index;
 					item.PositionEnd   = item.PositionStart + m.Groups[1].Value.Length;
 					// check comment before procedure
@@ -1416,7 +1435,8 @@ namespace HMSEditorNS {
 		private string GetGlobalContext() {
 			char[] txt = WhithoutStringAndComments(Editor.Text).ToCharArray();
 			foreach (HMSItem item in Functions) {
-				for (int i = item.PositionStart; i < item.PositionEnd; i++) {
+				for (int i = item.PositionReal; i < item.PositionEnd; i++) {
+					if (item.Type == "MainProcedure") continue;
 					if (i >= txt.Length) break;
 					txt[i] = txt[i] != '\n' ? CensChar : '\n';
 				}
@@ -1442,7 +1462,7 @@ namespace HMSEditorNS {
 			if (position < 0) position = Editor.SelectionStart;
 			HMSItem itemFunction = GetCurrentProcedure(position);
 
-			if (itemFunction != null) {
+			if ((itemFunction != null) && (itemFunction.Type != "MainProcedure")) {
 				if ((itemFunction.PositionStart == LastPtocedureIndex) && !NeedRecalcVars) return; // We are in same procedure - skip update
 				LastPtocedureIndex = itemFunction.PositionStart;
 			} else if ((LastPtocedureIndex == 0) && !NeedRecalcVars) {
@@ -1571,8 +1591,7 @@ namespace HMSEditorNS {
 								name   = m2.Groups[typeFirst ? 2 : 1].Value;
 								index += m2.Groups[typeFirst ? 2 : 1].Index;
 							}
-
-							if (!regexNotValidCharsInVars.IsMatch(name) && !ITEMS.ContainsName(name)) {
+							if (!regexNotValidCharsInVars.IsMatch(name) && !ITEMS.ContainsName(name) && !Functions.ContainsName(name)) {
 								HMSItem item = new HMSItem();
 								item.Global        = isGlobalContext;
 								item.Kind          = DefKind.Variable;
@@ -1657,24 +1676,21 @@ namespace HMSEditorNS {
 			Editor.Invalidate();
 		}
 		private static Regex regexSplitFuncParam   = new Regex("[,;]", RegexOptions.Compiled);
-		private static Regex regexFoundOurFunction = new Regex(@"([\w\.]+)\s*?[\(\[]([^\)\]]*)$", RegexOptions.Compiled | RegexOptions.Singleline);
+		private static Regex regexFoundOurFunction = new Regex(@"([\w\.]+)\s*?[\(\[](.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
 		private void CheckPositionIsInParametersSequence() {
 			string name, parameters;
 
-			int   iBack = Math.Max(Editor.Selection.Start.iLine - 3, 0); // Look back 3 lines maximum
-			Place place = new Place(0, iBack);
-			Range range = new Range(Editor, place, Editor.Selection.Start);
-			CheckFunctionHelp = false;
-            HMS.CurrentParamType = "";
-			string text = WhithoutStringAndComments(range.Text, true);
+			string text = Editor.Selection.GetFunctionLookedLeft();
+
+			HMS.CurrentParamType = "";
 			Match m = regexFoundOurFunction.Match(text);
 			if (m.Success) {
 				name       = m.Groups[1].Value;
 				parameters = m.Groups[2].Value;
-				Place pp = Editor.PositionToPlace(Editor.PlaceToPosition(range.Start) + m.Index);
+				Place pp = Editor.PositionToPlace(Editor.SelectionStart - text.Length + m.Index);
 				int iLinesCorrect = Editor.Selection.Start.iLine - pp.iLine + 1;
-				Point p  = Editor.PositionToPoint(Editor.PlaceToPosition(range.Start) + m.Index);
+				Point p  = Editor.PositionToPoint(Editor.SelectionStart - text.Length + m.Index);
 				p.Offset(0, Editor.CharHeight * iLinesCorrect + 2 );
 				Editor.ToolTip4Function.iLine = Editor.Selection.Start.iLine;
 				ShowFunctionToolTip(p, name, parameters);
@@ -1682,6 +1698,7 @@ namespace HMSEditorNS {
 				if (Editor.ToolTip4Function.Visible)
 					HideToolTip4Function(true);
 			}
+			CheckFunctionHelp = false;
 			return;
 		}
 
@@ -1693,7 +1710,7 @@ namespace HMSEditorNS {
 				if ((Editor.SelectionStart >= item.PositionStart) && (Editor.SelectionStart <= item.PositionEnd)) return; // we writing this function
 				Editor.ToolTip4Function.ShowFunctionParams(item, paramNum, Editor, p);
 				if (HMS.CurrentParamType.Length > 0) PopupMenu.Show(false);
-            }
+			}
 		}
 
 		#endregion
@@ -1715,10 +1732,10 @@ namespace HMSEditorNS {
 			CurrentValidTypes = HMS.HmsTypesString;
 			switch (ScriptLanguage) {
 				case "C++Script":
-					hmsTypes = hmsTypes.Replace("Integer|", "").Replace("Boolean|", "");
+					CurrentValidTypes += "int|long|void|bool|float|";
+                    hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "Extended|float|").Replace("Boolean|", "bool|") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
 					keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|";
 					snippets = "if (^) {\n}|if (^) {\n}\nelse {\n}|for (^;;) {\n}|while (^) {\n}|do {\n^}while ();";
-					CurrentValidTypes += "int|long|void|bool|float|";
 					break;
 				case "PascalScript":
 					keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Casr|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure";
@@ -1750,7 +1767,7 @@ namespace HMSEditorNS {
 			PopupMenu.Items.SetAutocompleteItems(items);
 
 			PopupMenu.Items.AddAutocompleteItems(HMS.ItemsFunction);
-			PopupMenu.Items.AddAutocompleteItems(HMS.ItemsVariable);
+			PopupMenu.Items.AddFilteredItems    (HMS.ItemsVariable);
 			PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
 			PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
 
@@ -1782,6 +1799,9 @@ namespace HMSEditorNS {
 			return regexCheckRussian.IsMatch(str);
 		}
 
+		private void ToolStripMenuItemSelectAll_Click(object sender, EventArgs e) {
+			Editor.SelectAll();
+		}
 	}
 
 }

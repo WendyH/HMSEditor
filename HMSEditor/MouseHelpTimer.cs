@@ -47,15 +47,20 @@ namespace HMSEditorNS {
 			try {
 				var    Editor = ActiveHMSEditor.Editor;
 				Point  point  = ActiveHMSEditor.MouseLocation;
-				Place  place  = ActiveHMSEditor.PointToPlace(point);
-				string line   = Editor.Lines[place.iLine];
+				int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex(0);
+				int CharHeight = ActiveHMSEditor.Editor.CharHeight;
+				int i = point.Y / CharHeight;
+				int iLine = iStartLine + i;
+				if ((iLine + 1) > ActiveHMSEditor.Editor.LinesCount) return;
+				Place place  = ActiveHMSEditor.PointToPlace(point);
+				string line   = Editor.Lines[iLine];
 				string value  = "";
 				bool evalSelection = false;
 				if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
 					Place selStart = Editor.Selection.Start;
 					Place selEnd   = Editor.Selection.End;
 					// Если указатель мыши в области виделения, то будем вычислять выдиление
-					evalSelection  = (selStart.iLine == place.iLine) && (selStart.iChar >= place.iChar) && (selEnd.iChar <= place.iChar);
+					evalSelection  = (selStart.iLine == iLine) && (selStart.iChar >= place.iChar) && (selEnd.iChar <= iLine);
 				}
 
 				Range r = new Range(Editor, place, place);
@@ -65,7 +70,7 @@ namespace HMSEditorNS {
 				
 				HMSItem item = ActiveHMSEditor.GetHMSItemByText(text); // Поиск известного элемента HMSItem по части текста
 				if (item != null && !string.IsNullOrEmpty(item.Text)) {
-					point.Offset(0, Editor.CharHeight);
+					point.Offset(0, Editor.CharHeight-4);
 					// Если идёт отладка - проверяем, мы навели на переменную или свойство объекта?
 					if (Editor.DebugMode && (evalSelection || OK4Evaluate(item)) ) {
 						if (evalSelection) {

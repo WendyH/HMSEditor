@@ -98,6 +98,7 @@
       <HintPath>Resources\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Design" />
@@ -199,6 +200,7 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="SingleGlobalInstance.cs" />
     <Compile Include="Templates.cs" />
+    <Compile Include="YamlParser.cs" />
     <Compile Include="ValueToolTip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -251,6 +253,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <EmbeddedResource Include="Resources\Markdown.html" />
     <None Include="icons\logo.png" />
     <None Include="Resources\Output_16xLG.png" />
     <EmbeddedResource Include="Resources\Ionic.Zip.Reduced.dll" />
