@@ -1247,11 +1247,7 @@ namespace HMSEditorNS {
 		}
 
 		private void EditorMouseClick(object sender, MouseEventArgs e) {
-<<<<<<< HEAD
 			if (e.X < (Editor.LeftIndent - 4)) {
-=======
-			if (e.X < (Editor.LeftIndent - 12)) {
->>>>>>> origin/master
 				int iFirstLine = Editor.YtoLineIndex();
 				int yFirstLine = Editor.LineInfos[iFirstLine].startY - Editor.VerticalScroll.Value;
                 int iLine = (int)((e.Y - yFirstLine) / (Editor.Font.Height - 1)) + iFirstLine;

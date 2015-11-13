@@ -26,20 +26,13 @@ namespace HMSEditorNS {
 					if (answer == DialogResult.No) return;
 
 					CloseAllOtherHMSEditors();
-<<<<<<< HEAD
 					instance.CreateMutex();
-=======
-
->>>>>>> origin/master
 				}
 				// Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
 				AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
 				try {
-<<<<<<< HEAD
 					SetAllowUnsafeHeaderParsing();
-=======
->>>>>>> origin/master
 					Application.EnableVisualStyles();
 					Application.SetCompatibleTextRenderingDefault(false);
 
@@ -55,11 +48,7 @@ namespace HMSEditorNS {
 					if (CheckKey(args, "-givemesomemagic")) {
 						// Запуск "тихого" режима
 						HMSEditor.SilentMode = true;
-<<<<<<< HEAD
 						if (HMSEditor.WatchHMS())
-=======
-                        if (HMSEditor.WatchHMS())
->>>>>>> origin/master
 							Application.Run(new HMSEditorAppContext());
 					} else {
 						// Запуск в обычном режиме с появлением отдельного самостоятельного окна
@@ -146,7 +135,6 @@ namespace HMSEditorNS {
 			}
 		}
 
-<<<<<<< HEAD
 		public static bool SetAllowUnsafeHeaderParsing() {
 			Assembly aNetAssembly = Assembly.GetAssembly(typeof(System.Net.Configuration.SettingsSection));
 			if (aNetAssembly != null) {
@@ -164,8 +152,5 @@ namespace HMSEditorNS {
 			}
 			return false;
 		}
-=======
-
->>>>>>> origin/master
 	}
 }
