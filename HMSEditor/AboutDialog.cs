@@ -1,8 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Net;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
@@ -11,16 +9,23 @@ namespace HMSEditorNS {
 	partial class AboutDialog: Form {
 		private static AboutDialog ThisDialog = null;
 		private static ProgressBar progress   = null;
-		private static string tmpFile = "";
+		private static string tmpFileRelease  = "";
+		private static string tmpFileTemplate = "";
 		private bool   ExistUpdate    = false;
 		private System.Threading.Timer UpdateTimer = new System.Threading.Timer(UpdateTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
 		private string UpdateInfo     = "";
+		private string TemplatesInfo  = "";
+		private string TemplatesDate  = "";
+		private string file4TestPrivilegies = Application.ExecutablePath + ".TestPrivilegies";
+		private static bool DeniedClose = false;
 
 		public AboutDialog() {
 			ThisDialog = this;
 			InitializeComponent();
 			
-			tmpFile = HMS.DownloadDir + HMS.DS + "HMSEditor.exe";
+			tmpFileRelease  = HMS.DownloadDir + HMS.DS + "HMSEditor.exe";
+			tmpFileTemplate = HMS.DownloadDir + HMS.DS + "HMSEditorTemplates.zip";
+			
 			this.Text = string.Format("О программе {0}", AssemblyTitle);
 			this.labelProductName.Text = AssemblyProduct;
 			this.labelVersion      .Text = string.Format("Версия {0}", AssemblyVersion);
@@ -28,6 +33,7 @@ namespace HMSEditorNS {
 			this.labelCompanyName  .Text = AssemblyCompany;
 			this.textBoxDescription.Text = AssemblyDescription;
 
+			DeleteGarbage();
 			progress = progressBar1;
 			logo.Init();
 		}
@@ -94,31 +100,84 @@ namespace HMSEditorNS {
 		}
 		#endregion
 
-		private void CheckUpdate(string lastVersion) {
-			if (GitHub.CompareVersions(lastVersion, AssemblyVersion) > 0) {
+		private void CheckUpdate(string lastVersion, string templateVersion) {
+			TemplatesDate = templateVersion;
+			ExistUpdate   = false;
+			string tmpltsLastUpdateStored = HMSEditor.Settings.Get("TemplateLastUpdate", "Common", "");
+			if (tmpltsLastUpdateStored != templateVersion) {
+				string datetime = templateVersion.Replace("T", " ").Replace("Z", "").Replace("-", ".");
+				labelNewTemplates.Text = "Есть новая версия шаблонов от " + datetime;
+				labelNewTemplates .Visible = true;
+				btnUpdateTemplates.Visible = true;
+			}
+			int resultCompares = GitHub.CompareVersions(lastVersion, AssemblyVersion);
+			if (lastVersion.Length == 0) {
+				labelNewVersion.Text = "Не удалось проверить версию на GitHub";
+			} else if (resultCompares == 0) {
+				labelNewVersion.Text = "У вас последняя версия программы";
+			} else if (resultCompares > 0) {
+				labelNewVersion.Text = "Есть новая версия " + lastVersion;
 				ExistUpdate = true;
-				labelNewVersion.Text    = "Есть новая версия " + lastVersion;
-				labelNewVersion.Visible = ExistUpdate;
-				btnUpdate      .Visible = ExistUpdate;
+				btnUpdateProgram.Visible = ExistUpdate;
+			}
+			labelNewVersion.Visible = true;
+			if (TemplatesInfo.Length > 0) labelNewTemplates.Visible = true;
+		}
+
+		// Проверка новой версии в фоновом режиме
+		private static void UpdateTimer_Task(object state) {
+			string updatesInfo, templatesInfo;
+			string lastVersion     = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor, out updatesInfo);
+			string templateVersion = GitHub.GetRepoUpdatedDate(HMS.GitHubTemplates, out templatesInfo);
+			if (ThisDialog.Visible) {
+				DeniedClose = true;
+				try {
+					ThisDialog.Invoke((MethodInvoker)delegate {
+						ThisDialog.UpdateInfo    = updatesInfo;
+						ThisDialog.TemplatesInfo = templatesInfo;
+						ThisDialog.CheckUpdate(lastVersion, templateVersion);
+					});
+				} finally {
+					DeniedClose = false;
+				}
 			}
 		}
 
-		private static void UpdateTimer_Task(object state) {
-			string info;
-			string lastVersion = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor, out info);
-			ThisDialog.Invoke((MethodInvoker)delegate {
-				ThisDialog.UpdateInfo = info;
-                ThisDialog.CheckUpdate(lastVersion);
-			});
+		private void AboutDialog_Load(object sender, EventArgs e) {
+		if (HMSEditor.NeedRestart) SetNeedRestart();
+			else UpdateTimer.Change(1, Timeout.Infinite);
 		}
 
-		private void AboutDialog_Load(object sender, EventArgs e) {
-			if (HMSEditor.NeedRestart) SetNeedRestart();
-			UpdateTimer.Change(1, Timeout.Infinite);
+		private void AboutDialog_FormClosing(object sender, FormClosingEventArgs e) {
+			if (DeniedClose) e.Cancel = true;
+			else DeleteGarbage();
 		}
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			Process.Start(linkLabel1.Text);
+		}
+
+		public void DrawProgress(int proc) {
+			int penWidth = 4;
+			System.Drawing.Pen      pen = new System.Drawing.Pen(System.Drawing.Color.Green, penWidth);
+			System.Drawing.Graphics g   = CreateGraphics();
+			int w = ClientSize.Width  - (penWidth / 2);
+			int h = ClientSize.Height - (penWidth / 2); 
+			int P = w * 2 + h * 2;
+			int L = P * proc / 100 ;
+			int DL1 = Math.Min(L, w / 2); L -= DL1;
+			int DL2 = Math.Min(L, h);     L -= DL2;
+			int DL3 = Math.Min(L, w);     L -= DL3;
+			int DL4 = Math.Min(L, h);     L -= DL4;
+			int DL5 = Math.Min(L, w / 2); L -= DL5;
+			int x = w / 2 + 1, y = h + 1;
+			if (DL1 > 0) g.DrawLine(pen, x, y, x - DL1 - 1, y); x -= DL1;
+			if (DL2 > 0) g.DrawLine(pen, x, y, x, y - DL2 - 1); y -= DL2;
+			if (DL3 > 0) g.DrawLine(pen, x, y, x + DL3 + 1, y); x += DL3;
+			if (DL4 > 0) g.DrawLine(pen, x, y, x, y + DL4 + 1); y += DL4;
+			if (DL5 > 0) g.DrawLine(pen, x, y, x - DL5 - 1, y); x -= DL5;
+			pen.Dispose();
+			g.Dispose();
 		}
 
 		private void btnUpdate_Click(object sender, EventArgs e) {
@@ -129,13 +188,13 @@ namespace HMSEditorNS {
 				MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
 				HMSEditor.Exit();
 				// waiting 3 sek, copy new file to our path and start our executable
-				string rargs = "/C ping 127.0.0.1 -n 3 && Copy /Y \"" + HMSEditor.NeedCopyNewFile + "\" \"" + Application.ExecutablePath + "\" && \"" + Application.ExecutablePath + "\" "+HMS.StartArgs;
+				string rargs = "/C ping 127.0.0.1 -n 3 && Copy /Y \"" + HMSEditor.NeedCopyNewFile + "\" \"" + Application.ExecutablePath + "\" &&  Del \"" + HMSEditor.NeedCopyNewFile + "\" && \"" + Application.ExecutablePath + "\" " + HMS.StartArgs;
 				ProcessStartInfo Info = new ProcessStartInfo();
 				Info.Arguments      = rargs;
 				Info.WindowStyle    = ProcessWindowStyle.Hidden;
 				Info.CreateNoWindow = true;
 				Info.FileName       = "cmd.exe";
-				if (NeedPrivilegies()) {
+				if (NeedPrivilegies(file4TestPrivilegies)) {
 					msg = "Текущая программа находится в каталоге, где нужны привилегии для записи файлов.\n" +
 					      "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
 					      "который данными привилегиями обладает.";
@@ -144,73 +203,180 @@ namespace HMSEditorNS {
 				}
 				try {
 					Process.Start(Info);
-				} catch {
+				} catch (Exception ex) {
 					msg = "Ошибка обновления программы.\n" +
 					      "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
 					      "Автоматическое обновление не произошло.";
 					MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+					HMS.LogError(ex.ToString());
 					return;
 				}
 				Application.Exit();
 				Close();
 				return;
 			}
-			progress.Show();
+			//progress.Show();
+			Refresh();
+			btnUpdateProgram.Text = "Идёт загрузка...";
+			btnUpdateProgram  .Enabled = false;
+			btnUpdateTemplates.Enabled = false;
+			GitHub.DownloadFileCompleted   += new EventHandler(DownloadReleaseCallback);
+			GitHub.DownloadProgressChanged += new EventHandler(DownloadProgressCallback);
 
-			GitHub.DownloadFileCompleted   += new AsyncCompletedEventHandler(DownloadFileCallback);
-			GitHub.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadProgressCallback);
-
-			GitHub.DownloadLatestReleaseAsync(tmpFile);
+			GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
 		}
 
-		private bool NeedPrivilegies() {
-			string file = Application.ExecutablePath + ".TestPrivilegies";
-            try {
-				File.Create(file);
-				File.Delete(file);
+		private bool NeedPrivilegies(string file) {
+			try {
+				using (FileStream testStream = File.Create(file, 100, FileOptions.DeleteOnClose)) {
+				}
 			} catch {
 				return true;
 			}
 			return false;
 		}
 
-		public void SetNeedRestart() {
-			labelNewVersion.Text    = "Требуется перезапуск программы";
-			labelNewVersion.Visible = true;
-			btnUpdate.Text          = "Перезапустить";
-			btnUpdate.Visible       = true;
-		}
-
-		private static void InstallNewFile() {
-			HMSEditor.NeedRestart     = true;
-			HMSEditor.NeedCopyNewFile = tmpFile;
-			ThisDialog.SetNeedRestart();
-		}
-
-		private static void DownloadFileCallback(object sender, AsyncCompletedEventArgs e) {
-			progress.Hide();
-			if (!AuthenticodeTools.IsTrusted(tmpFile)) {
-				string msg = "У полученного файла не верная цифровая подпись. Обновление прервано.\n\n"+
-				             "Это может означать, что произошла подмена файла или автор забыл подписать файл. "+
-				             "Может быть временные проблемы с интернетом. В любом случае, можно попробовать " +
-				             "посетить пару мест, где знают о существовании данной программы и спросить там:\n" +
-				             "https://homemediaserver.ru/forum\nhttps://hms.lostcut.net\nhttps://github.com/WendyH/HMSEditor/issues";
-				MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-				return;
+		private void TryDeleteFile(string file) {
+			try {
+				if (File.Exists(file))
+					File.Delete(file);
+			} catch {
 			}
-			InstallNewFile();
 		}
 
-		private static void DownloadProgressCallback(object sender, DownloadProgressChangedEventArgs e) {
-			progress.Maximum = (int)e.TotalBytesToReceive;
-			progress.Value   = (int)e.BytesReceived;
+		public void SetNeedRestart() {
+			labelNewVersion .Text    = "Требуется перезапуск программы";
+			labelNewVersion .Visible = true;
+			btnUpdateProgram.Text    = "Перезапустить";
+			btnUpdateProgram.Visible = true;
+			btnUpdateProgram  .Enabled = true;
+			btnUpdateTemplates.Enabled = true;
+		}
+
+		private void InstallNewFile() {
+			HMSEditor.NeedRestart     = true;
+			HMSEditor.NeedCopyNewFile = tmpFileRelease;
+			SetNeedRestart();
+		}
+
+		private void DownloadReleaseCallback(object sender, EventArgs e) {
+			GitHub.RequestState state = sender as GitHub.RequestState;
+			GitHub.DownloadFileCompleted   -= DownloadReleaseCallback;
+			GitHub.DownloadProgressChanged -= DownloadProgressCallback;
+			if (ThisDialog != null && ThisDialog.Visible) {
+				DeniedClose = true;
+				try {
+					ThisDialog.Invoke((MethodInvoker)delegate {
+						progress.Hide();
+						if (!AuthenticodeTools.IsTrusted(tmpFileRelease)) {
+							string msg = "У полученного файла не верная цифровая подпись. Обновление прервано.\n\n" +
+										 "Это может означать, что произошла подмена файла или автор забыл подписать файл. " +
+										 "Может быть временные проблемы с интернетом. В любом случае, можно попробовать " +
+										 "посетить пару мест, где знают о существовании данной программы и спросить там:\n" +
+										 "https://homemediaserver.ru/forum\nhttps://hms.lostcut.net\nhttps://github.com/WendyH/HMSEditor/issues";
+							MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+							return;
+						}
+						InstallNewFile();
+					});
+				} finally {
+					DeniedClose = false;
+				}
+			}
+		}
+
+		private void DownloadProgressCallback(object sender, EventArgs e) {
+			GitHub.RequestState state = sender as GitHub.RequestState;
+			if (ThisDialog != null && ThisDialog.Visible) {
+				if (state != null) {
+					DeniedClose = true;
+					try {
+						ThisDialog.Invoke((MethodInvoker)delegate {
+							if (state.TotalBytes > 0) {
+								progress.Maximum = (int)state.TotalBytes;
+								progress.Value   = (int)state.BytesRead;
+								int proc = (int)(state.BytesRead / (state.TotalBytes / 100));
+								DrawProgress(proc);
+							}
+						});
+					} finally {
+						DeniedClose = false;
+					}
+				}
+			} else {
+				if (state != null) state.Close();
+			}
 		}
 
 		private void labelNewVersion_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			if (UpdateInfo.Length == 0) return;
 			frmUpdateInfoDialog form = new frmUpdateInfoDialog();
-			form.Info = UpdateInfo;
+			string html = HMS.ReadTextFromResource("Markdown.html");
+			form.SetText(html.Replace("<MarkdownText>", UpdateInfo));
 			form.ShowDialog();
-        }
+		}
+
+		private void labelNewTemplates_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			if (TemplatesInfo.Length == 0) return;
+			frmUpdateInfoDialog form = new frmUpdateInfoDialog();
+			string html = HMS.ReadTextFromResource("Markdown.html");
+			form.SetText(html.Replace("<MarkdownText>", TemplatesInfo));
+			form.Text = "Информация о новых шаблонах HMS Editor";
+			form.ShowDialog();
+		}
+
+		private void DeleteGarbage() {
+			TryDeleteFile(tmpFileTemplate);
+			TryDeleteFile(file4TestPrivilegies);
+		}
+
+		private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			Process.Start(linkLabel3.Text);
+		}
+
+		private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			Process.Start(linkLabel2.Text);
+		}
+
+		private void DownloadTemplateCallback(object sender, EventArgs e) {
+			GitHub.RequestState state = sender as GitHub.RequestState;
+
+			GitHub.DownloadFileCompleted   -= DownloadTemplateCallback;
+			GitHub.DownloadProgressChanged -= DownloadProgressCallback;
+
+			if (ThisDialog != null && ThisDialog.Visible) {
+				DeniedClose = true;
+				try {
+					ThisDialog.Invoke((MethodInvoker)delegate {
+						progress.Hide();
+						btnUpdateProgram  .Enabled = true;
+						btnUpdateTemplates.Enabled = true;
+						btnUpdateTemplates.Visible = false;
+                        if (HMS.ExtractZip(tmpFileTemplate, true)) {
+							HMSEditor.Settings.Set("TemplateLastUpdate", TemplatesDate, "Common");
+							HMSEditor.Settings.Save();
+							HMS.LoadTemplates();
+							labelNewTemplates.Text = "Обновлено";
+						}
+                    });
+				} finally {
+					DeniedClose = false;
+				}
+			}
+		}
+
+		private void btnUpdateTemplates_Click(object sender, EventArgs e) {
+			//progress.Show();
+			Refresh();
+			btnUpdateTemplates.Text = "Идёт загрузка...";
+			btnUpdateProgram  .Enabled = false;
+			btnUpdateTemplates.Enabled = false;
+			GitHub.DownloadFileCompleted   += new EventHandler(DownloadTemplateCallback);
+			GitHub.DownloadProgressChanged += new EventHandler(DownloadProgressCallback);
+
+			GitHub.DownloadFileAsync("https://codeload.github.com/" + HMS.GitHubTemplates + "/legacy.zip/master", tmpFileTemplate);
+
+		}
+
 	}
 }
