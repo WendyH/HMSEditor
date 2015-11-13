@@ -2509,6 +2509,25 @@ namespace FastColoredTextBoxNS {
 			lines.Manager.ClearHistory();
 		}
 
+		// < By WendyH -------------------------
+		public void UpdateText(string text) {
+			if ((text == null) || (text == Text)) return;
+			if (text == "\r") text = "\n";
+			Selection.ColumnSelectionMode = false;
+			try {
+				lines.Clear();
+				foreach(string lineText in text.Split('\n')) {
+					Line L = lines.CreateLine();
+					foreach(char c in lineText)
+						L.Add(new Char(c));
+				}
+			} finally {
+			}
+			IsChanged = false;
+			Invalidate();
+		}
+		// > By WendyH -------------------------
+
 		/// <summary>
 		/// Insert text into current selected position
 		/// </summary>
@@ -3197,11 +3216,9 @@ namespace FastColoredTextBoxNS {
 			if (a.KeyCode == Keys.Tab && !AcceptsTab)
 				return false;
 
-
 			if (macrosManager != null)
 				if (!HotkeysMapping.ContainsKey(keyData) || (HotkeysMapping[keyData] != FCTBAction.MacroExecute && HotkeysMapping[keyData] != FCTBAction.MacroRecord))
 					macrosManager.ProcessKey(keyData);
-
 
 			if (HotkeysMapping.ContainsKey(keyData)) {
 				var act = HotkeysMapping[keyData];

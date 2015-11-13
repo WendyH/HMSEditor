@@ -16,9 +16,14 @@ namespace FastColoredTextBoxNS
     [Browsable(false)]
     public class AutocompleteMenu : ToolStripDropDown
     {
-		public  string[]  lastwords = new string[20]; // By WendyH
+		// < By WendyH -------------------------------
+		public  string[]  lastwords = new string[20];
 		public  bool      OnlyCtrlSpace = false;
-        private AutocompleteListView listView;
+		public  bool      AfterComplete = false;
+		public  string    Filter    = "";
+		// > By WendyH -------------------------------
+
+		private AutocompleteListView listView;
         public  ToolStripControlHost host;
         public  Range Fragment { get; internal set; }
 
@@ -204,7 +209,7 @@ namespace FastColoredTextBoxNS
 		string LastSelected = "";
 		public event EventHandler FocussedItemIndexChanged;
 
-		internal List<HMSItem> visibleItems;
+		internal AutocompleteItems visibleItems;
 		AutocompleteItems sourceItems = new AutocompleteItems();
 		public AutocompleteItems VisibleVariables = new AutocompleteItems();
 		public AutocompleteItems VisibleLocalVars = new AutocompleteItems();
@@ -431,7 +436,7 @@ namespace FastColoredTextBoxNS
 			if (tb.IsDisposed) return;
 			if (!Menu.Enabled || !this.Enabled) { Menu.Close(); return; }
 			if (tb.CheckInTheStringOrComment()) return;
-
+			if (!forced && Menu.AfterComplete) { Menu.AfterComplete = false; return; }
 			visibleItems.Clear();
 			FocussedItemIndex = 0;
 			VerticalScroll.Value = 0;
@@ -448,7 +453,12 @@ namespace FastColoredTextBoxNS
 			if (text.Length == 0) {
 				if (tb.ToolTip4Function.Visible && (HMS.CurrentParamType.Length > 0)) {
 					if (HMS.CurrentParamType == "boolean") { visibleItems.AddRange(HMS.ItemsBoolean); doNotGetFromSourceItems = true; Menu.Fragment = fragment; }
-					else if (HMS.HmsTypes.ContainsName(HMS.CurrentParamType)) { HMSClassInfo info = HMS.HmsTypes[HMS.CurrentParamType]; visibleItems.AddRange(info.MemberItems); doNotGetFromSourceItems = true; Menu.Fragment = fragment; }
+					else if (HMS.HmsTypes.ContainsName(HMS.CurrentParamType)) {
+						HMSClassInfo info = HMS.HmsTypes[HMS.CurrentParamType];
+						visibleItems.AddRange(info.MemberItems);
+						doNotGetFromSourceItems = true;
+						Menu.Fragment = fragment;
+					}
 				} else {
 					text = tb.Selection.GetVariableForEqual(Menu.SearchPattern);
 					if (text.Length > 0) {
@@ -490,12 +500,14 @@ namespace FastColoredTextBoxNS
 				}
 				// > By WendyH -------------------------------------
 				if (!doNotGetFromSourceItems) {
-					List<HMSItem> notExacctly = new List<HMSItem>();
+					AutocompleteItems notExacctly = new AutocompleteItems();
 					foreach (var item in sourceItems) {
 						item.Parent = Menu;
 						CompareResult res = item.Compare(text);
-						if (res != CompareResult.Hidden) visibleItems.Add(item);
-						else if (item.NotExactlyCompare(text) == CompareResult.Visible) notExacctly.Add(item);
+						if (res != CompareResult.Hidden)
+							visibleItems.Add(item);
+						else if (item.NotExactlyCompare(text) == CompareResult.Visible)
+							notExacctly.Add(item);
 						if (lastword.Length > 0) {
 							if (item.MenuText == lastword) {
 								foundSelected = true;
@@ -677,13 +689,14 @@ namespace FastColoredTextBoxNS
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            base.OnMouseDoubleClick(e);
+			HMSEditor.DisableUpdateFromHMS = true;
+			base.OnMouseDoubleClick(e);
             FocussedItemIndex = PointToItemIndex(e.Location);
             Invalidate();
             OnSelecting();
-        }
+		}
 
-        internal virtual void OnSelecting()
+		internal virtual void OnSelecting()
         {
             if (FocussedItemIndex < 0 || FocussedItemIndex >= visibleItems.Count)
                 return;
@@ -736,7 +749,8 @@ namespace FastColoredTextBoxNS
 			//replace text of fragment
 			var tb = fragment.tb;
 			// < By WendyH ---------------------------
-			if (fragment.CharBeforeStart == '=') newText = " " + newText;
+			if (tb.ToolTip4Function.Visible) Menu.AfterComplete = true;
+            if (fragment.CharBeforeStart == '=') newText = " " + newText;
 			int iLine = fragment.Start.iLine;
 			int iChar = fragment.Start.iChar;
 			HMSItem hmsItem = item as HMSItem;
@@ -878,13 +892,24 @@ namespace FastColoredTextBoxNS
         {
             AutocompleteItems list = new AutocompleteItems();
             foreach (var item in items)
-                list.Add(new HMSItem(item));
-            SetAutocompleteItems(list);
+				list.Add(new HMSItem(item));
+			SetAutocompleteItems(list);
         }
 
         public void SetAutocompleteItems(AutocompleteItems items)
         {
             sourceItems = items;
+        }
+
+		public void AddFilteredItems(AutocompleteItems items) {
+			AutocompleteItems list = new AutocompleteItems();
+			string filter = Menu.Filter;
+			foreach (var item in items) {
+				if ((filter.Length > 0) && (item.Filter.Length>0) && (filter.IndexOf(item.Filter)<0)) continue;
+				if (list.ContainsName(item.MenuText)) continue;
+                list.Add(item);
+			}
+			AddAutocompleteItems(list);
         }
 
 		public void AddAutocompleteItems(AutocompleteItems items) {

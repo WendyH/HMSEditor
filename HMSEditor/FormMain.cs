@@ -12,6 +12,7 @@ namespace HMSEditorNS {
 			InitializeComponent();
 			SetTooltip(checkBoxWatchHMS, "Наблюдать за HMS", "Внедрятся в окна редактирования скриптов программы Home Media Server");
 			SetTooltip(checkBoxDebug   , "Режим отладки"   , "Режим вывода дополнительной информации в окно консоли");
+			FormCaption = HMSEditor.MsgCaption;
 		}
 
 		private void SetTooltip(Control cntrl, string title, string msg) {

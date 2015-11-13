@@ -16,7 +16,9 @@ namespace FastColoredTextBoxNS {
 		int updating = 0;
 
 		string cachedText;
-		string cachedTextWithoutStringsAndComments = ""; // By WendyH
+		// < By WendyH ---------------------------------
+		string cachedTextWithoutStringsAndComments = "";
+		// > By WendyH ---------------------------------
 		List<Place> cachedCharIndexToPlace;
 		int cachedTextVersion = -1;
 
@@ -1284,6 +1286,52 @@ namespace FastColoredTextBoxNS {
 			Place endFragment = r.Start;
 
 			return new Range(tb, startFragment, endFragment);
+		}
+
+		public bool GoLeftWithoutSelectionChanged() {
+			if (start.iChar == 0 && start.iLine == 0) return false;
+			if (start.iChar > 0) start.Offset(-1, 0);
+			else start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
+			preferedPos = -1;
+			end = start;
+			return true;
+		}
+
+		public string GetFunctionLookedLeft() {
+			StringBuilder sb = new StringBuilder();
+			bool wasOpened = false;
+			int iBack = Math.Max(Start.iLine - 3, 0); // Look back 3 lines maximum
+			Place placeBegin = new Place(0, iBack);
+			Range r = new Range(tb, placeBegin, Start);
+			string text = tb.WhithoutStringAndComments(r.Text, true);
+			if (text.Length == 0) return "";
+			Stack<int> stack1 = new Stack<int>();
+			Stack<int> stack2 = new Stack<int>();
+			for (int i = text.Length - 1; i >= 0; i--) {
+				char ch = text[i];
+				if ((stack1.Count > 0) || (stack2.Count > 0))
+	                sb.Append(' ');
+				else
+					sb.Append(ch);
+				if      (ch == ']') { stack1.Push(1); } 
+				else if (ch == '[') {
+					if      (stack1.Count > 0) { stack1.Pop(); continue;     } 
+					else if (!wasOpened)       { wasOpened = true; continue; } 
+					else break;
+				} 
+				else if (ch == ')') { stack2.Push(1); } 
+				else if (ch == '(') {
+					if      (stack2.Count > 0) { stack2.Pop(); continue;     } 
+					else if (!wasOpened)       { wasOpened = true; continue; }
+					else break;
+				}
+				if (stack1.Count + stack2.Count > 0) continue;
+				if (wasOpened && !regexLookLeft.IsMatch(ch.ToString())) break;
+			}
+			if (!wasOpened) return "";
+			char[] charArray = sb.ToString().ToCharArray();
+			Array.Reverse(charArray);
+			return new string(charArray);
 		}
 		// > By WendyH -----------------------------------------------------
 
