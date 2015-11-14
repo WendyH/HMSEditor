@@ -26,6 +26,8 @@ namespace HMSEditorNS {
 			var info = HMS.HmsClasses[type];
 			if (info.MemberItems.ContainsName("SaveToString") && type.ToLower()!="tbitmap32") return text + ".SaveToString";
 			if (info.MemberItems.ContainsName("Text")) return text + ".Text";
+			if (type == "THmsScriptMediaItem")
+				return "Str("+text+ ")+\" (THmsScriptMediaItem)\"#13+\"mpiTitle=\"+" + text + "[mpiTitle]+#13+\"mpiFilePath=\"+" + text + "[mpiFilePath]+#13+\"mpiThumbnail=\"+" + text + "[mpiThumbnail]+#13+\"mpiTimeLength=\"+" + text + "[mpiTimeLength]+#13+\"mpiCreateDate=\"+" + text + "[mpiCreateDate]";
 			return text;
 		}
 
