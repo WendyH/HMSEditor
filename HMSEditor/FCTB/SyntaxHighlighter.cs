@@ -564,7 +564,8 @@ namespace FastColoredTextBoxNS {
 
 		private void InitCSharpRegex() {
 			//CSharpStringRegex = new Regex( @"""""|@""""|''|@"".*?""|(?<!@)(?<range>"".*?[^\\]"")|'.*?[^\\]'", RegexCompiledOption);
-			CSharpStringAndCommentsRegex = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
+			//CSharpStringAndCommentsRegex = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
+			CSharpStringAndCommentsRegex = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
 			CSharpStringRegex =
 				new Regex(
 					@"
@@ -775,9 +776,10 @@ namespace FastColoredTextBoxNS {
 		}
 
 		private void InitVBRegex() {
-			VBStringRegex = new Regex(@"""(\\[\s\S]|[^""])*""|('.*)", RegexCompiledOption);  // By WendyH
-			VBCommentRegex = new Regex(@"'.*$", RegexOptions.Multiline | RegexCompiledOption);
-			VBNumberRegex = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?\b", RegexCompiledOption);
+//			VBStringRegex    = new Regex(@"""(\\[\s\S]|[^""])*""|('.*)", RegexCompiledOption);  // By WendyH
+			VBStringRegex    = new Regex(@"""(\\""|[^""])*""|('.*)", RegexCompiledOption);  // By WendyH
+			VBCommentRegex   = new Regex(@"'.*$", RegexOptions.Multiline | RegexCompiledOption);
+			VBNumberRegex    = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?\b", RegexCompiledOption);
 			VBClassNameRegex = new Regex(@"\b(Class|Structure|Enum|Interface)[ ]+(?<range>\w+?)\b",
 										 RegexOptions.IgnoreCase | RegexCompiledOption);
 			VBKeywordRegex =
@@ -1064,7 +1066,7 @@ namespace FastColoredTextBoxNS {
 		}
 
 		private void InitPHPRegex() {
-			PHPStringRegex = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|((//|#).*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
+			PHPStringRegex = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|((//|#).*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
 			PHPNumberRegex = new Regex(@"\b\d+[\.]?\d*\b", RegexCompiledOption);
 			PHPVarRegex = new Regex(@"\$[a-zA-Z_\d]*\b", RegexCompiledOption);
 			PHPKeywordRegex1 =
@@ -1113,7 +1115,7 @@ namespace FastColoredTextBoxNS {
 		}
 
 		private void InitJScriptRegex() {
-			JScriptStringRegex = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
+			JScriptStringRegex = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
 			JScriptNumberRegex = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b", RegexCompiledOption);
 			JScriptKeywordRegex =
 				new Regex(
@@ -1264,7 +1266,7 @@ namespace FastColoredTextBoxNS {
 		}
 
 		void InitYAMLRegex() {
-			YAMLStringRegex     = new Regex(@"""(\\[\s\S]|[^""\r])*""|'(\\[\s\S]|[^'\r])*'|(#.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption);
+			YAMLStringRegex     = new Regex(@"""(\\""|[^""\r])*""|'(\\'|[^'\r])*'|(#.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption);
 			YAMLNumberRegex     = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b", RegexCompiledOption);
 			YAMLKeywordRegex    = new Regex(@"\b(true|false|null)\b", RegexCompiledOption);
 			YAMLObjectNameRegex = new Regex(@"(?<=^|\s|{)\w+\s*?:", RegexCompiledOption);

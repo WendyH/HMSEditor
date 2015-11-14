@@ -40,6 +40,7 @@
 			this.ToolStripMenuItemPaste = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItemDelete = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+			this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItemBookmarkClear = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItemClearBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,7 +99,6 @@
 			this.btnUnload = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-			this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
 			this.contextMenuStrip1.SuspendLayout();
@@ -145,8 +145,8 @@
 			this.Editor.ContextMenuStrip = this.contextMenuStrip1;
 			this.Editor.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.Editor.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.arrow_run_16xMD;
-			this.Editor.DelayedEventsInterval = 500;
-			this.Editor.DelayedTextChangedInterval = 200;
+			this.Editor.DelayedEventsInterval = 600;
+			this.Editor.DelayedTextChangedInterval = 500;
 			this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.Editor.Font = new System.Drawing.Font("Consolas", 9.75F);
@@ -198,7 +198,7 @@
             this.ToolStripMenuItemZoom100,
             this.btnInsertTemplate});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(228, 280);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(228, 258);
 			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
 			// 
 			// ToolStripMenuItemUndo
@@ -264,6 +264,13 @@
 			// 
 			this.toolStripSeparator10.Name = "toolStripSeparator10";
 			this.toolStripSeparator10.Size = new System.Drawing.Size(224, 6);
+			// 
+			// ToolStripMenuItemSelectAll
+			// 
+			this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
+			this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(227, 22);
+			this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
+			this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
 			// 
 			// ToolStripMenuItemBookmarkClear
 			// 
@@ -830,13 +837,6 @@
 			this.imageList1.Images.SetKeyName(10, "Constant_495.png");
 			this.imageList1.Images.SetKeyName(11, "Event_594.png");
 			this.imageList1.Images.SetKeyName(12, "Template_Application_16xLG.png");
-			// 
-			// ToolStripMenuItemSelectAll
-			// 
-			this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
-			this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(227, 22);
-			this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
-			this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
 			// 
 			// HMSEditor
 			// 

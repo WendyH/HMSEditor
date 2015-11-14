@@ -688,7 +688,7 @@ namespace HMSEditorNS {
 
 		private static Regex regexBracketsR = new Regex(@"(\(|\))", RegexOptions.Compiled);
 		private static Regex regexBracketsQ = new Regex(@"(\[|\])", RegexOptions.Compiled);
-		private static Regex regexStringAndComments = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled | RegexOptions.Singleline);
+		private static Regex regexStringAndComments = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled | RegexOptions.Singleline);
 
 		public static string GetTextWithoutBrackets(string text) {
 			text = GetTextWithoutBlock(text, regexBracketsR, "(");

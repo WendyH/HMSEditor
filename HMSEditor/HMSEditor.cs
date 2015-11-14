@@ -44,9 +44,9 @@ namespace HMSEditorNS {
 		private static Regex regexDetectProcedure  = new Regex(@"\b(void|procedure)" , RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 		private static Regex regexPartOfLine       = new Regex(@"\b(.*?\s.*?\s.*?)\b", RegexOptions.Compiled);
 
-		private static Regex regexStringAndCommentsCPP    = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
-		private static Regex regexStringAndCommentsPascal = new Regex(@"""(\\[\s\S]|[^""\r])*""|'(\\[\s\S]|[^'\r])*'|(//.*|\{[\s\S]*?\})", RegexOptions.Compiled);
-		private static Regex regexStringAndCommentsBasic  = new Regex(@"""(\\[\s\S]|[^""])*""|('.*)"                                     , RegexOptions.Compiled);
+		private static Regex regexStringAndCommentsCPP    = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
+		private static Regex regexStringAndCommentsPascal = new Regex(@"""(\\""|[^""\r])*""|'(\\'|[^'\r])*'|(//.*|\{[\s\S]*?\})", RegexOptions.Compiled);
+		private static Regex regexStringAndCommentsBasic  = new Regex(@"""(\\""|[^""])*""|('.*)"                                     , RegexOptions.Compiled);
 
 		private static Regex regexSearchConstantsCPP      = new Regex(@"#define\s+(\w+)(.*)"                             , RegexOptions.Compiled);
 		private static Regex regexSearchConstantsPascal1  = new Regex(@"\bconst\b(.*?)\b(var|procedure|function|begin)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -1008,7 +1008,7 @@ namespace HMSEditorNS {
 			if (NeedUpdateHmsCode) UpdateHmsCode();
 			else
 				NeedUpdateHmsCode = true;
-            if ((EnableFunctionToolTip && CheckFunctionHelp) || Editor.ToolTip4Function.Visible) CheckPositionIsInParametersSequence();
+			if ((EnableFunctionToolTip && CheckFunctionHelp) || Editor.ToolTip4Function.Visible) CheckPositionIsInParametersSequence();
 			if (TextChangedDelayed != null) TextChangedDelayed(this, e);
 			Locked = false;
 		}
