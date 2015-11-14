@@ -107,14 +107,12 @@ namespace HMSEditorNS {
 			lastDate = regexUpdDate.Match(jsonInfo).Groups[1].Value;
 			string jsonCommitsData = DownloadString(giturl + userRepo + "/commits");
 			YamlObject Commits = YamlParser.Parse(jsonCommitsData);
-			sb.AppendLine("Дата | Сообшение");
-			sb.AppendLine("-----|----------");
 			foreach (var commit in Commits.ChildItems) {
 				string date = NormalizeDate(commit[@"commit\author\date"]);
 				string msg  = commit[@"commit\message"];
 				if (date.StartsWith("2015.10")) break;
 				if ((msg.IndexOf("README.md") > 0) || (msg.IndexOf("gitignore") > 0)) continue;
-				sb.AppendLine(date + "|" + msg);
+				sb.AppendLine("### "+date + "  \r\n" + msg + "\r\n");
 			}
 			info = DownloadString("https://raw.githubusercontent.com/"+userRepo+"/master/README.md");
 			info+= "  \r\n## История обновлений и исправлений  \r\n" + sb.ToString();
