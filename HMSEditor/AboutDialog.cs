@@ -23,8 +23,8 @@ namespace HMSEditorNS {
 			ThisDialog = this;
 			InitializeComponent();
 			
-			tmpFileRelease  = HMS.DownloadDir + HMS.DS + "HMSEditor.exe";
-			tmpFileTemplate = HMS.DownloadDir + HMS.DS + "HMSEditorTemplates.zip";
+			tmpFileRelease  = HMS.DownloadDir + "HMSEditor.exe";
+			tmpFileTemplate = HMS.DownloadDir + "HMSEditorTemplates.zip";
 			
 			this.Text = string.Format("О программе {0}", AssemblyTitle);
 			this.labelProductName.Text = AssemblyProduct;

@@ -335,7 +335,7 @@ namespace HMSEditorNS {
 		private static System.Threading.Timer DownloadTimer = new System.Threading.Timer(DownloadTemplateUpdates_Task, null, Timeout.Infinite, Timeout.Infinite);
 
 		public static void DownloadTemplates(string lastUpdateDate) {
-			string tmpFile = DownloadDir + DS + "HMSEditorTemplates.zip";
+			string tmpFile = DownloadDir + "HMSEditorTemplates.zip";
 			GitHub.DownloadLegacyArchive(GitHubTemplates, tmpFile);
 			if (ExtractZip(tmpFile, true)) {
 				HMSEditor.Settings.Set("TemplateLastUpdate", lastUpdateDate, "Common");
