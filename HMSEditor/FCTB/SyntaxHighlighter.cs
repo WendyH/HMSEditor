@@ -26,12 +26,13 @@ namespace FastColoredTextBoxNS {
 		public readonly Style WendyHsLiteStyle = new TextStyle(new SolidBrush(Color.FromArgb(0, 0x40, 0x80)), null, FontStyle.Regular);
 		public readonly Style DarkOrangeStyle  = new TextStyle(Brushes.DarkOrange, null, FontStyle.Regular);
 		public readonly Style DarkRedStyle     = new TextStyle(Brushes.DarkRed, null, FontStyle.Regular);
-		public readonly Style DarkRedBoldStyle = new TextStyle(Brushes.DarkRed, null, FontStyle.Bold);
 		public readonly Style VSClassStyle     = new TextStyle(new SolidBrush(Color.FromArgb(255, 43, 145, 175)), null, FontStyle.Regular);
-		public bool AltPascalKeywordsHighlight = true;
+		public Style DefaultStyle;
+        public bool AltPascalKeywordsHighlight = true;
 		public bool RedStringsHighlight        = false;
 		public string HmsClasses  = "";
 		public string HmsKeywords = "";
+		public Theme  StyleTheme  = null;
 		// By WendyH > ----------------------------------------------------------------------------
 		//
 		private readonly Dictionary<string, SyntaxDescriptor> descByXMLfileNames =
@@ -136,7 +137,6 @@ namespace FastColoredTextBoxNS {
 			GreenStyle.Dispose();
 			GrayStyle.Dispose();
 			DarkOrangeStyle.Dispose();
-			DarkRedBoldStyle.Dispose();
 			DarkRedStyle.Dispose();
 			BrownStyle.Dispose();
 			BoldStyle.Dispose();
@@ -152,8 +152,6 @@ namespace FastColoredTextBoxNS {
 		/// Highlights syntax for given language
 		/// </summary>
 		public void HighlightSyntax(Language language, Range range) {
-			//range.tb.RegexStringAndComments = null;
-			StringStyle = RedStringsHighlight ? RedStyle : DarkRedStyle; // By WendyH
 			switch (language) {
 				case Language.CSharp:
 					CSharpSyntaxHighlight(range);
@@ -565,7 +563,41 @@ namespace FastColoredTextBoxNS {
 		private void InitCSharpRegex() {
 			//CSharpStringRegex = new Regex( @"""""|@""""|''|@"".*?""|(?<!@)(?<range>"".*?[^\\]"")|'.*?[^\\]'", RegexCompiledOption);
 			//CSharpStringAndCommentsRegex = new Regex(@"""(\\[\s\S]|[^""])*""|'(\\[\s\S]|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
-			CSharpStringAndCommentsRegex = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
+			//CSharpStringAndCommentsRegex = new Regex(@"""(\\\\|\\""|[^""])*""|'(\\\\|\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption); // By WendyH
+			CSharpStringAndCommentsRegex =
+				new Regex(
+					@"
+                            # Character definitions:
+                            '
+                            (?> # disable backtracking
+                              (?:
+                                \\[^\r\n]|    # escaped meta char
+                                [^'\r\n]      # any character except '
+                              )*
+                            )
+                            '?
+                            |
+                            # Normal string & verbatim strings definitions:
+                            (?<verbatimIdentifier>@)?         # this group matches if it is an verbatim string
+                            ""
+                            (?> # disable backtracking
+                              (?:
+                                # match and consume an escaped character including escaped double quote ("") char
+                                (?(verbatimIdentifier)        # if it is a verbatim string ...
+                                  """"|                         #   then: only match an escaped double quote ("") char
+                                  \\.                         #   else: match an escaped sequence
+                                )
+                                | # OR
+            
+                                # match any char except double quote char ("")
+                                [^""]
+                              )*
+                            )
+                            ""
+                        |(//.*?(\n|$)|\/\*[\s\S]*?\*\/)",
+					RegexOptions.ExplicitCapture | RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace |
+					RegexCompiledOption
+					); //thanks to rittergig for this regex
 			CSharpStringRegex =
 				new Regex(
 					@"
@@ -615,7 +647,26 @@ namespace FastColoredTextBoxNS {
 					RegexCompiledOption);
 		}
 
+		// < By WendyH ------------------------------------------
+		public void InitStyleTheme() {
+			if (StyleTheme == null) return;
+			if (StyleTheme.StringStyle     != null) StringStyle     = StyleTheme.StringStyle;
+			if (StyleTheme.CommentStyle    != null) CommentStyle    = StyleTheme.CommentStyle;
+			if (StyleTheme.NumberStyle     != null) NumberStyle     = StyleTheme.NumberStyle;
+			if (StyleTheme.ClassNameStyle  != null) ClassNameStyle  = StyleTheme.ClassNameStyle;
+			if (StyleTheme.KeywordStyle    != null) KeywordStyle    = StyleTheme.KeywordStyle;
+			if (StyleTheme.TagBracketStyle != null) TagBracketStyle = StyleTheme.TagBracketStyle;
+			if (StyleTheme.CommentTagStyle != null) CommentTagStyle = StyleTheme.CommentTagStyle;
+			if (StyleTheme.FunctionsStyle  != null) FunctionsStyle  = StyleTheme.FunctionsStyle;
+			if (StyleTheme.DeclFunctionStyle != null) DeclFunctionStyle = StyleTheme.DeclFunctionStyle;
+			
+			StringStyle = RedStringsHighlight ? RedStyle : StringStyle; // By WendyH
+		}
+		// > By WendyH ------------------------------------------
+
 		public void InitStyleSchema(Language lang) {
+			FunctionsStyle    = DefaultStyle;
+			DeclFunctionStyle = DefaultStyle;
 			switch (lang) {
 				case Language.CSharp:
 					StringStyle     = BrownStyle;
@@ -705,7 +756,7 @@ namespace FastColoredTextBoxNS {
 					NumberStyle     = MagentaStyle;
 					ClassNameStyle  = VSClassStyle;
 					KeywordStyle    = BlueStyle;
-					break;
+                    break;
 				case Language.JScript:
 					StringStyle     = DarkRedStyle;
 					CommentStyle    = GreenStyle;
@@ -722,14 +773,14 @@ namespace FastColoredTextBoxNS {
 					break;
 					// By WendyH > -------------------------------
 			}
+			InitStyleTheme();
+		}
 
-	}
-
-	/// <summary>
-	/// Highlights C# code
-	/// </summary>
-	/// <param name="range"></param>
-	public void CSharpSyntaxHighlight(Range range) {
+		/// <summary>
+		/// Highlights C# code
+		/// </summary>
+		/// <param name="range"></param>
+		public void CSharpSyntaxHighlight(Range range) {
 			range.tb.CommentPrefix = "//";
 			range.tb.LeftBracket = '(';
 			range.tb.RightBracket = ')';
@@ -1102,7 +1153,7 @@ namespace FastColoredTextBoxNS {
 			if (PHPStringRegex == null) InitPHPRegex();
 			range.SetStyle(NumberStyle, PHPNumberRegex);
 			range.SetStyle(VariableStyle, PHPVarRegex);
-			range.SetStyle(KeywordStyle, PHPKeywordRegex1);
+			range.SetStyle(KeywordStyle , PHPKeywordRegex1); // 
 			range.SetStyle(KeywordStyle2, PHPKeywordRegex2);
 			range.SetStyle(KeywordStyle3, PHPKeywordRegex3);
 			range.SetStylesStringsAndComments(PHPStringRegex, StringStyle, CommentStyle); // By WendyH
@@ -1230,6 +1281,9 @@ namespace FastColoredTextBoxNS {
 		string hmsCommonTypes = "Byte|Word|Integer|Longint|Cardinal|TColor|Boolean|Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|Char|String|Pointer|Variant|Array|Nil|Null|True|False";
 
 		Regex CPPScriptKeywordRegex, CPPClassNameRegex;
+		static Regex regexDeclFunctionCPP = new Regex(@"(^|\n)\s*?(\w+)\s+(?<range>\w+)\(", RegexOptions.Compiled);
+		static Regex regexDeclFunctionPAS = new Regex(@"(Function|Procedure)\s+(?<range>\w+)\(", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		static Regex regexDeclFunctionBAS = new Regex(@"(Function|SUB)\s+(?<range>\w+)[\(\s]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		Regex PascalScriptStringRegex, PascalScriptNumberRegex, PascalScriptKeywordRegex1, PascalScriptKeywordRegex2, PascalScriptClassNameRegex;
 		Regex BasicScriptKeywordRegex1, BasicScriptKeywordRegex2;
 		Regex HmsJScriptKeywordRegex;
@@ -1308,12 +1362,14 @@ namespace FastColoredTextBoxNS {
 			range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
 
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, BoldStyle, BoldStyle2, DarkRedBoldStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, BoldStyle, BoldStyle2, FunctionsStyle);
 			if (PascalScriptStringRegex == null) InitPascalScriptRegex();
 			range.SetStyle(NumberStyle     , PascalScriptNumberRegex  );
 			range.SetStyle(KeywordStyle    , PascalScriptKeywordRegex1);
 			range.SetStyle(ClassNameStyle  , PascalScriptClassNameRegex);
 			range.SetStyle(AltPascalKeywordsHighlight ? BoldStyle2 : BoldStyle, PascalScriptKeywordRegex2);
+			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
+			range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS);
 			range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers(@"\b(begin|try)\b", @"\b(end)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
@@ -1331,15 +1387,16 @@ namespace FastColoredTextBoxNS {
 			range.tb.RightBracket2 = '}';
 			range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, AttributeStyle, ClassNameStyle, KeywordStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, AttributeStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, DeclFunctionStyle);
 			if (CSharpStringRegex     == null) InitCSharpRegex();
 			if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
 			range.SetStyle(NumberStyle   , CSharpNumberRegex);
 			range.SetStyle(AttributeStyle, CSharpAttributeRegex);
 			range.SetStyle(ClassNameStyle, CPPClassNameRegex);
-			range.SetStyle(KeywordStyle  , CPPScriptKeywordRegex);
+			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
+			range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP);
+            range.SetStyle(KeywordStyle  , CPPScriptKeywordRegex);
 			range.SetStylesStringsAndComments(CSharpStringAndCommentsRegex, StringStyle, CommentStyle);
-
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers("{", "}");       //allow to collapse brackets block
         }
@@ -1356,11 +1413,12 @@ namespace FastColoredTextBoxNS {
 			range.tb.RightBracket2 = '}';
 			range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);";
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, FunctionsStyle);
 			if (JScriptStringRegex == null) InitJScriptRegex();
 			if (HmsJScriptKeywordRegex == null) InitHmsJScriptRegex();
 			range.SetStyle(NumberStyle , JScriptNumberRegex);
 			range.SetStyle(KeywordStyle, HmsJScriptKeywordRegex);
+			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
 			range.SetStylesStringsAndComments(JScriptStringRegex, StringStyle, CommentStyle);
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers("{", "}");       //allow to collapse brackets block
@@ -1377,13 +1435,15 @@ namespace FastColoredTextBoxNS {
 			range.tb.LeftBracket2  = '\x0';
 			range.tb.RightBracket2 = '\x0';
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.\(\)]+\s*(?<range>=)\s*(?<range>.+)";
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, ClassNameStyle, KeywordStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, ClassNameStyle, KeywordStyle, FunctionsStyle);
 			if (VBStringRegex == null) InitVBRegex();
 			if (BasicScriptKeywordRegex1 == null) InitBasicScriptRegex();
 			range.SetStyle(NumberStyle   , VBNumberRegex);
 			range.SetStyle(ClassNameStyle, VBClassNameRegex);
 			range.SetStyle(KeywordStyle  , BasicScriptKeywordRegex1);
 			range.SetStyle(BlueBoldStyle , BasicScriptKeywordRegex2);
+			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
+			range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
 			range.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers(@"#Region\b", @"#End\s+Region\b", RegexOptions.IgnoreCase);
@@ -1514,6 +1574,8 @@ namespace FastColoredTextBoxNS {
 		/// SQL Types style
 		/// </summary>
 		public Style TypesStyle { get; set; }
+
+		public Style DeclFunctionStyle { get; set; } // By WendyH
 
 		#endregion
 	}

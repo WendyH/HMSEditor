@@ -41,6 +41,20 @@ namespace whYamlParser {
 		public string         Tag    = "";
 		public YamlObjects    ChildItems = new YamlObjects();
 
+		// Constructors
+		public YamlObject() {
+
+		}
+
+		public YamlObject(string name) {
+			Name = name;
+		}
+
+		public YamlObject(string name, string value) {
+			Name  = name;
+			Value = value;
+		}
+
 		public int Count { get { return ChildItems.Count; } }
 
 		public string this[string name] {
@@ -69,6 +83,10 @@ namespace whYamlParser {
 
 		public IEnumerator GetEnumerator() {
 			return ((IEnumerable)ChildItems).GetEnumerator();
+		}
+
+		public new string ToString() {
+			return Name + ": " + Value;
 		}
 	}
 

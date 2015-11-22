@@ -325,6 +325,7 @@ namespace HMSEditorNS {
 		private IntPtr hWndMemo        = IntPtr.Zero;
 		private IntPtr hWndComboBox    = IntPtr.Zero;
 
+		private string ThemeName          = "";
 		public  string Filename           = HMS.TemplatesDir;
 		public  int    LastPtocedureIndex = -1;
 		private int    LastTextLenght     = -1;
@@ -345,10 +346,10 @@ namespace HMSEditorNS {
 
 		private System.Threading.Timer MouseTimer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
 		public  Point       MouseLocation         = new Point();
-		private Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
-		private Color       ColorCurrentLine      = Color.FromArgb(100, 210, 210, 255);
-		private Color       ColorChangedLine      = Color.FromArgb(255, 152, 251, 152);
-		private MarkerStyle SameWordsStyle        = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
+		public  Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
+		public  Color       ColorCurrentLine      = Color.FromArgb(100, 210, 210, 255);
+		public  Color       ColorChangedLine      = Color.FromArgb(255, 152, 251, 152);
+		public  MarkerStyle SameWordsStyle        = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
 		private DateTime    LastNavigatedDateTime = DateTime.Now;
 
 		private MatchEvaluator evaluatorSameLines  = new MatchEvaluator(MatchReturnEmptyLines);
@@ -606,7 +607,7 @@ namespace HMSEditorNS {
 			SaveFileDialog fileFialog = new SaveFileDialog();
 			if (Filename.Length > 0) {
 				fileFialog.InitialDirectory = Path.GetDirectoryName(Filename);
-				fileFialog.FileName         = Path.GetFileName     (Filename);
+				fileFialog.FileName         = Path.GetFileNameWithoutExtension(Filename);
 			}
 			fileFialog.Filter           = FileDialogFilter();
 			fileFialog.FilterIndex      = FileDialogIndexFilter();
@@ -826,7 +827,13 @@ namespace HMSEditorNS {
 			EnableFunctionToolTip       = btnIntelliSenseFunctions.Checked;
 			EnableEvaluateByMouse       = btnEvaluateByMouse      .Checked;
 
-			Filename       = Settings.Get("LastFile", section, Filename);
+
+			ThemeName = Settings.Get("Theme"   , section, ThemeName);
+			Filename  = Settings.Get("LastFile", section, Filename );
+
+			HMS.LoadTemplates(); // Сначала загружаем шаблоны, какие есть
+			FillThemes();
+
 			ScriptLanguage = Settings.Get("Language", section, "C++Script");
 
 			HighlightCurrentLine(btnHighlightCurrentLine.Checked);
@@ -843,6 +850,23 @@ namespace HMSEditorNS {
 			}
 
 			Editor.Refresh();
+		}
+
+		private void FillThemes() {
+			btnThemes.DropDownItems.Clear();
+			foreach (var name in Themes.Dict.Keys) {
+				ToolStripMenuItem item = (ToolStripMenuItem)btnThemes.DropDownItems.Add(name);
+                item.Tag = name;
+				item.Click += (o, a) => {
+					ThemeName = (string)item.Tag;
+                    Themes.SetTheme(this, ThemeName);
+                    foreach (ToolStripMenuItem i in btnThemes.DropDownItems) i.Checked = i.Text == ThemeName;
+                };
+				if (name == ThemeName) {
+					item.Checked = true;
+                    Themes.SetTheme(this, name);
+				}
+			}
 		}
 
 		/// <summary>
@@ -872,6 +896,7 @@ namespace HMSEditorNS {
 				Settings.Set("AlternateFont"       , btnToolStripMenuItemFONT.Checked, section);
 				Settings.Set("VerticalLineText"    , btnVerticalLineText     .Checked, section);
 
+				Settings.Set("Theme"               , ThemeName                       , section);
 				Settings.Set("LastFile"            , Filename                        , section);
 				Settings.Set("Language"            , ScriptLanguage                  , section);
 				Settings.Set("Zoom"                , Editor.Zoom                     , section);
@@ -1223,12 +1248,12 @@ namespace HMSEditorNS {
 
 		private void ToolStripMenuItemAltPascalScriptHighlight_Click(object sender, EventArgs e) {
 			Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
-			Editor.OnSyntaxHighlight(new TextChangedEventArgs(Editor.Range));
+			Editor.RefreshTheme();
 		}
 
 		private void btnRedStringsHighlight_Click(object sender, EventArgs e) {
 			Editor.SyntaxHighlighter.RedStringsHighlight = btnRedStringsHighlight.Checked;
-			Editor.OnSyntaxHighlight(new TextChangedEventArgs(Editor.Range));
+			Editor.RefreshTheme();
 		}
 
 		private void Editor_SelectionChanged(object sender, EventArgs e) {
@@ -1786,7 +1811,7 @@ namespace HMSEditorNS {
 				} else {
 					item.Click += (o, a) => {
 						if (HMSEditor.ActiveEditor != null) {
-							Editor.InsertText((o as ToolStripItem).AccessibleDescription.Trim());
+							Editor.InsertText((o as ToolStripItem).AccessibleDescription);
 						}
 					};
 				}

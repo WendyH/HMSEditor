@@ -211,6 +211,7 @@ namespace HMSEditorNS {
 					HMS.LogError(ex.ToString());
 					return;
 				}
+				TryDeleteFile(HMS.ErrorLogFile);
 				Application.Exit();
 				Close();
 				return;
@@ -328,7 +329,7 @@ namespace HMSEditorNS {
 		private void DeleteGarbage() {
 			TryDeleteFile(tmpFileTemplate);
 			TryDeleteFile(file4TestPrivilegies);
-		}
+        }
 
 		private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			Process.Start(linkLabel3.Text);
@@ -378,5 +379,47 @@ namespace HMSEditorNS {
 
 		}
 
+		private void btnDelete_Click(object sender, EventArgs e) {
+			string msg;
+            msg = "ВНИМАНИЕ!\n" +
+			      "Программа, загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
+			      "Вы уверены, что хотите удалить HMSEditor, а также папку и всё её содержимое: "+HMS.WorkingDir+"?";
+			DialogResult answ = MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+			if (answ == DialogResult.Yes) {
+				HMSEditor.Exit();
+				try {
+					Directory.Delete(HMS.WorkingDir, true);
+				} catch { }
+				// waiting 3 sek, copy new file to our path and start our executable
+				string rargs = "/C ping 127.0.0.1 -n 3 && Del /F \"" + Application.ExecutablePath + "\"";
+				ProcessStartInfo Info = new ProcessStartInfo();
+				Info.Arguments = rargs;
+				Info.WindowStyle = ProcessWindowStyle.Hidden;
+				Info.CreateNoWindow = true;
+				Info.FileName = "cmd.exe";
+				if (NeedPrivilegies(file4TestPrivilegies)) {
+					msg = "Текущая программа находится в каталоге, где нужны привилегии для удаления файлов.\n" +
+						  "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
+						  "который данными привилегиями обладает.";
+					MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					Info.Verb = "runas";
+				}
+				try {
+					Process.Start(Info);
+				} catch (Exception ex) {
+					msg = "Ошибка удаления программы.\n" +
+						  "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
+						  "Автоматическое удаление исполняемого файла не произошло.";
+					MessageBox.Show(msg, HMSEditor.MsgCaption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+					HMS.LogError(ex.ToString());
+					return;
+				}
+				TryDeleteFile(HMS.ErrorLogFile);
+				DeleteGarbage();
+				Application.Exit();
+				Close();
+				return;
+			}
+		}
 	}
 }

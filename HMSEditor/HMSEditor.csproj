@@ -200,7 +200,9 @@
     <Compile Include="NativeMethods.cs" />
     <Compile Include="SingleGlobalInstance.cs" />
     <Compile Include="Templates.cs" />
-    <Compile Include="YamlParser.cs" />
+    <Compile Include="Themes.cs" />
+    <Compile Include="Utils\Plist.cs" />
+    <Compile Include="Utils\YamlParser.cs" />
     <Compile Include="ValueToolTip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -216,7 +218,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FCTB\FastColoredTextBox.resx" />
     <EmbeddedResource Include="FCTB\FindForm.resx" />
-    <EmbeddedResource Include="FCTB\GoToForm.resx" />
+    <EmbeddedResource Include="FCTB\GoToForm.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx" />
     <EmbeddedResource Include="FCTB\ReplaceForm.resx" />
     <EmbeddedResource Include="FormUpdateInfo.resx">
@@ -253,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <EmbeddedResource Include="Resources\ColorThemes.txt" />
     <EmbeddedResource Include="Resources\Markdown.html" />
     <None Include="icons\logo.png" />
     <None Include="Resources\Output_16xLG.png" />

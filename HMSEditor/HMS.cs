@@ -303,12 +303,13 @@ namespace HMSEditorNS {
 
 		private static string downloaddir = "";
 		internal static string DownloadDir {
-			get { if (downloaddir.Length == 0) downloaddir = getDownloadFolderPath(); return downloaddir; }
+			get { if (downloaddir.Length == 0) downloaddir = Path.GetTempPath(); return downloaddir; }
 		}
 
 		internal static char DS { get { return Path.DirectorySeparatorChar; } }
 
 		public static string TemplatesDir { get { return WorkingDir + DS + "Templates" ; } }
+		public static string ThemesDir    { get { return WorkingDir + DS + "Themes"    ; } }
 		public static string ErrorLogFile { get { return WorkingDir + DS + "errors.log"; } }
 
 		public static HMSClasses HmsClasses = new HMSClasses();
@@ -363,8 +364,10 @@ namespace HMSEditorNS {
 				if (fileInfo.Length > MaxLogSize)
 					File.Delete(ErrorLogFile);
 			}
-			File.AppendAllText(ErrorLogFile, DateTime.Now.ToString() + " " + msg + "\n");
-		}
+			try {
+				File.AppendAllText(ErrorLogFile, DateTime.Now.ToString() + " " + msg + "\n");
+			} catch { }
+        }
 
 		internal static bool ExtractZip(string zipfile, bool excludeTopDir = false, bool deleteAfter = true) {
 			bool success = false;
@@ -432,6 +435,8 @@ namespace HMSEditorNS {
 			try {
 				if (!Directory.Exists(WorkingDir))
 					Directory.CreateDirectory(WorkingDir);
+				if (!Directory.Exists(dir))
+					Directory.CreateDirectory(dir);
 			} catch (Exception e) {
 				if (resetWorkingDirIfError) workingdir = "";
 				LogError(e.ToString());
@@ -439,20 +444,11 @@ namespace HMSEditorNS {
 		}
 
 		public static void InitAndLoadHMSKnowledgeDatabase() {
+			Themes.Init();
+
 			CreateIfNotExistDirectory(WorkingDir, true);
-			CreateIfNotExistDirectory(WorkingDir + DS + "Templates");
-
-			LoadTemplates(); // Сначала загружаем шаблоны, какие есть
-
-			// Проверяем, когда последний раз запрашивали версию шаблонов на Github
-			string lastCheck = HMSEditor.Settings.Get("TemplateLastCheck", "Common", "");
-			string nowDate   = DateTime.Now.ToString("yyyy.MM.dd");
-			if (lastCheck != nowDate) {
-				// Если сегодня ещё не проверяли - запускаем фоновое обновление шаблонов с Github
-				//DownloadTimer.Change(0, Timeout.Infinite);
-				HMSEditor.Settings.Set("TemplateLastCheck", nowDate, "Common");
-				HMSEditor.Settings.Save();
-			}
+			CreateIfNotExistDirectory(TemplatesDir);
+			CreateIfNotExistDirectory(ThemesDir);
 
 			// Загружаем базу данных знаний о HMS (классы, типы, функции и т.п.) из ресурсов
 			HmsTypesString    = Regex.Replace(HmsTypesStringWithHelp, "{.*?}", "").ToLower();
@@ -612,9 +608,16 @@ namespace HMSEditorNS {
 			foreach (var q in ItemsVariable) KnownType(q.Type);
 			foreach (var q in ItemsConstant) KnownType(q.Type);
 
-			ClassesString  += NotFoundedType.ToLower();
+			string funcList = "";
+			foreach (var q in ItemsFunction) funcList += "|"+q.MenuText;
+			funcList = funcList.Substring(1).Replace("|Int|", "|Int\\(|");
+            RegexHmsFunctions = new Regex(@"\b(" + funcList + @")\b", RegexOptions.IgnoreCase);
+
+			ClassesString += NotFoundedType.ToLower();
 			HmsTypesString += "";
 		}
+		public static Regex RegexHmsFunctions = null;
+
 
 		private static bool KnownType(string type) {
 			if (type.Length < 1) return true;

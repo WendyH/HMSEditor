@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace FastColoredTextBoxNS
 {
-    /// <summary>
-    /// Style of chars
-    /// </summary>
-    /// <remarks>This is base class for all text and design renderers</remarks>
-    public abstract class Style : IDisposable
+	/// <summary>
+	/// Style of chars
+	/// </summary>
+	/// <remarks>This is base class for all text and design renderers</remarks>
+	public abstract class Style : IDisposable
     {
         /// <summary>
         /// This style is exported to outer formats (HTML for example)
@@ -97,25 +97,29 @@ namespace FastColoredTextBoxNS
         }
     }
 
-    /// <summary>
-    /// Style for chars rendering
-    /// This renderer can draws chars, with defined fore and back colors
-    /// </summary>
-    public class TextStyle : Style
+	/// <summary>
+	/// Style for chars rendering
+	/// This renderer can draws chars, with defined fore and back colors
+	/// </summary>
+	public class TextStyle : Style
     {
-        public Brush ForeBrush { get; set; }
-        public Brush BackgroundBrush { get; set; }
-        public FontStyle FontStyle { get; set; }
+        public Brush     ForeBrush       { get; set; }
+        public Brush     BackgroundBrush { get; set; }
+        public FontStyle FontStyle       { get; set; }
         //public readonly Font Font;
         public StringFormat stringFormat;
 
-        public TextStyle(Brush foreBrush, Brush backgroundBrush, FontStyle fontStyle)
+		public TextStyle(Brush foreBrush, Brush backgroundBrush, FontStyle fontStyle)
         {
-            this.ForeBrush = foreBrush;
+            this.ForeBrush       = foreBrush;
             this.BackgroundBrush = backgroundBrush;
-            this.FontStyle = fontStyle;
+            this.FontStyle       = fontStyle;
             stringFormat = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
         }
+
+		public void RefreshColors(FastColoredTextBox tb) {
+			ForeBrush = new SolidBrush(tb.ForeColor);
+		}
 
         public override void Draw(Graphics gr, Point position, Range range)
         {

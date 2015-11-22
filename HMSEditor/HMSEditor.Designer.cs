@@ -14,8 +14,8 @@
 				components.Dispose();
 			}
 			MouseTimer.Dispose();
-			InvisibleCharsStyle.Dispose();
-			SameWordsStyle.Dispose();
+			if (InvisibleCharsStyle!=null) InvisibleCharsStyle.Dispose();
+			if (SameWordsStyle != null) SameWordsStyle.Dispose();
 			base.Dispose(disposing);
 		}
 
@@ -99,6 +99,7 @@
 			this.btnUnload = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+			this.btnThemes = new System.Windows.Forms.ToolStripMenuItem();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
 			this.contextMenuStrip1.SuspendLayout();
@@ -577,6 +578,7 @@
             this.btnRedStringsHighlight,
             this.btnToolStripMenuItemFONT,
             this.toolStripButtonHotKeys,
+            this.btnThemes,
             this.toolStripSeparator4,
             this.btnUnload,
             this.btnAbout});
@@ -838,6 +840,12 @@
 			this.imageList1.Images.SetKeyName(11, "Event_594.png");
 			this.imageList1.Images.SetKeyName(12, "Template_Application_16xLG.png");
 			// 
+			// btnThemes
+			// 
+			this.btnThemes.Name = "btnThemes";
+			this.btnThemes.Size = new System.Drawing.Size(313, 22);
+			this.btnThemes.Text = "Цветовые темы";
+			// 
 			// HMSEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -927,5 +935,6 @@
 		private System.Windows.Forms.ToolStripMenuItem btnEvaluateByMouse;
 		private System.Windows.Forms.ToolStripMenuItem btnHints4CtrlSpace;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemSelectAll;
+		private System.Windows.Forms.ToolStripMenuItem btnThemes;
 	}
 }

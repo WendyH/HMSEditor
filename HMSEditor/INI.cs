@@ -13,6 +13,8 @@ namespace HMSEditorNS {
 		/// </summary>
 		public string File = "";
 
+		public bool NoComments = false;
+
 		/// <summary>
 		/// Data of settings ini file as Dictionary
 		/// </summary>
@@ -78,7 +80,9 @@ namespace HMSEditorNS {
 			Dict.Clear();
 			string section = "", key = "", val = "";
 			for (int i = 0; i < lines.Count; i++) {
-				string line = RegexComment.Replace(lines[i], "");
+				string line;
+				if (NoComments) line = lines[i];
+				else line = RegexComment.Replace(lines[i], "");
 				if (line.Trim().Length == 0) continue;   // Skip empty lines and comments
 				// if current line is section - get current section name and continue
 				if (RegexSection.IsMatch(line)) {

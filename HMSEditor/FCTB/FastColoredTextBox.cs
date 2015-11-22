@@ -2655,6 +2655,7 @@ namespace FastColoredTextBoxNS {
 		public StyleIndex GetStyleIndexMask(Style[] styles) {
 			StyleIndex mask = StyleIndex.None;
 			foreach (Style style in styles) {
+				if (style == null) continue; // By WendyH
 				int i = GetStyleIndex(style);
 				if (i >= 0)
 					mask |= Range.ToStyleIndex(i);
@@ -4551,7 +4552,8 @@ namespace FastColoredTextBoxNS {
 			visibleMarkers.Clear();
 			e.Graphics.SmoothingMode = SmoothingMode.None;
 			//
-			var servicePen = new Pen(ServiceLinesColor);
+			var servicePen  = new Pen(ServiceLinesColor);
+			var vertLinePen = new Pen(Color.FromArgb(52, ServiceLinesColor)); // By WendyH
 			Brush changedLineBrush = new SolidBrush(ChangedLineColor);
 			Brush indentBrush      = new SolidBrush(IndentBackColor);
 			Brush paddingBrush     = new SolidBrush(PaddingBackColor);
@@ -4580,7 +4582,7 @@ namespace FastColoredTextBoxNS {
 				e.Graphics.DrawLine(servicePen, LeftIndentLine, 0, LeftIndentLine, ClientSize.Height);
 			//draw preferred line width
 			if (PreferredLineWidth > 0)
-				e.Graphics.DrawLine(servicePen,
+				e.Graphics.DrawLine(vertLinePen,
 									new Point(
 										LeftIndent + Paddings.Left + PreferredLineWidth * CharWidth -
 										HorizontalScroll.Value + 1, textAreaRect.Top + 1),
@@ -6673,6 +6675,20 @@ namespace FastColoredTextBoxNS {
 			Invalidate();
 			return true;
 		}
+
+		// < By WendyH --------------------------------------------
+		public void RefreshTheme() {
+            Range.ClearStyle(StyleIndex.All);
+			for (int i = 0; i < Styles.Length; i++)
+				Styles[i] = null;
+            DefaultStyle.RefreshColors(this);
+			((TextStyle)(SyntaxHighlighter.BoldStyle )).RefreshColors(this);
+			((TextStyle)(SyntaxHighlighter.BoldStyle2)).RefreshColors(this);
+			SyntaxHighlighter.InitStyleSchema(Language);
+			OnSyntaxHighlight(new TextChangedEventArgs(Range));
+			Refresh();
+		}
+		// > By WendyH --------------------------------------------
 
 		public void OnSyntaxHighlight(TextChangedEventArgs args) {
 #if debug

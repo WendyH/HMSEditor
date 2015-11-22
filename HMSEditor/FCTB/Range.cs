@@ -653,6 +653,7 @@ namespace FastColoredTextBoxNS {
 		/// </summary>
 		public void SetStyle(Style style, Regex regex, bool owerwrite = false) // parameter "owerwrite" added by WendyH
 		{
+			if ((style==null) || (regex == null)) return; // By WendyH
 			//search code for style
 			StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
 			SetStyle(layer, regex, owerwrite);
