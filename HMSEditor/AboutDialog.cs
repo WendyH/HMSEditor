@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace HMSEditorNS {
 	partial class AboutDialog: Form {
@@ -11,12 +13,13 @@ namespace HMSEditorNS {
 		private static ProgressBar progress   = null;
 		private static string tmpFileRelease  = "";
 		private static string tmpFileTemplate = "";
-		private bool   ExistUpdate    = false;
+		private bool   ExistUpdate   = false;
 		private System.Threading.Timer UpdateTimer = new System.Threading.Timer(UpdateTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
-		private string UpdateInfo     = "";
-		private string TemplatesInfo  = "";
-		private string TemplatesDate  = "";
-		private string file4TestPrivilegies = Application.ExecutablePath + ".TestPrivilegies";
+		private string UpdateInfo    = "";
+		private string TemplatesInfo = "";
+		private string TemplatesDate = "";
+		private string ExecutableDir = Path.GetDirectoryName(Application.ExecutablePath);
+		
 		private static bool DeniedClose = false;
 
 		public AboutDialog() {
@@ -32,7 +35,6 @@ namespace HMSEditorNS {
 			this.labelCopyright    .Text = AssemblyCopyright;
 			this.labelCompanyName  .Text = AssemblyCompany;
 			this.textBoxDescription.Text = AssemblyDescription;
-
 			DeleteGarbage();
 			progress = progressBar1;
 			logo.Init();
@@ -194,7 +196,7 @@ namespace HMSEditorNS {
 				Info.WindowStyle    = ProcessWindowStyle.Hidden;
 				Info.CreateNoWindow = true;
 				Info.FileName       = "cmd.exe";
-				if (NeedPrivilegies(file4TestPrivilegies)) {
+				if (!DirIsWriteable(ExecutableDir)) {
 					msg = "Текущая программа находится в каталоге, где нужны привилегии для записи файлов.\n" +
 					      "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
 					      "который данными привилегиями обладает.";
@@ -227,14 +229,35 @@ namespace HMSEditorNS {
 			GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
 		}
 
-		private bool NeedPrivilegies(string file) {
+		private bool DirIsWriteable(string dir) {
+			DirectoryInfo dirInfo = new DirectoryInfo(dir);
+			AuthorizationRuleCollection rules;
+			WindowsIdentity identity;
 			try {
-				using (FileStream testStream = File.Create(file, 100, FileOptions.DeleteOnClose)) {
-				}
-			} catch {
-				return true;
+				rules = dirInfo.GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier));
+				identity = WindowsIdentity.GetCurrent();
+			} catch (UnauthorizedAccessException uae) {
+				//Debug.WriteLine(uae.ToString());
+				return false;
 			}
-			return false;
+
+			bool   isAllow = false;
+			string userSID = identity.User.Value;
+			int i;
+            foreach (FileSystemAccessRule rule in rules) {
+				if (rule.IdentityReference.ToString() == userSID || identity.Groups.Contains(rule.IdentityReference)) {
+					i  = (int)(rule.FileSystemRights & FileSystemRights.Write);
+					i |= (int)(rule.FileSystemRights & FileSystemRights.WriteAttributes);
+					i |= (int)(rule.FileSystemRights & FileSystemRights.WriteData);
+					i |= (int)(rule.FileSystemRights & FileSystemRights.CreateDirectories);
+					i |= (int)(rule.FileSystemRights & FileSystemRights.CreateFiles);
+					if ((i > 0) && (rule.AccessControlType == AccessControlType.Deny))
+						return false;
+					else if ((i > 0) && (rule.AccessControlType == AccessControlType.Allow))
+						isAllow = true;
+				}
+			}
+			return isAllow;
 		}
 
 		private void TryDeleteFile(string file) {
@@ -328,7 +351,6 @@ namespace HMSEditorNS {
 
 		private void DeleteGarbage() {
 			TryDeleteFile(tmpFileTemplate);
-			TryDeleteFile(file4TestPrivilegies);
         }
 
 		private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
@@ -397,7 +419,7 @@ namespace HMSEditorNS {
 				Info.WindowStyle = ProcessWindowStyle.Hidden;
 				Info.CreateNoWindow = true;
 				Info.FileName = "cmd.exe";
-				if (NeedPrivilegies(file4TestPrivilegies)) {
+				if (!DirIsWriteable(ExecutableDir)) {
 					msg = "Текущая программа находится в каталоге, где нужны привилегии для удаления файлов.\n" +
 						  "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
 						  "который данными привилегиями обладает.";
