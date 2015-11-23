@@ -73,12 +73,13 @@ namespace HMSEditorNS {
 				for (int i = 0; i < scope.Length; i++) scope[i] = scope[i].ToLower().Trim();
                 YamlObject settings = item.GetObject("settings");
 				if ((name=="") && (item["scope"]=="") && (settings.Count > 0)) {
-					t.Background    = ToColor(settings["background"   ]);
-					t.Caret         = ToColor(settings["caret"        ]);
-					t.Foreground    = ToColor(settings["foreground"   ]);
-					t.Invisibles    = ToColor(settings["invisibles"   ]);
-					t.LineHighlight = ToColor(settings["lineHighlight"]);
-					t.Selection     = ToColor(settings["selection"    ]);
+					t.Background     = ToColor(settings["background"   ]);
+					t.Caret          = ToColor(settings["caret"        ]);
+					t.Foreground     = ToColor(settings["foreground"   ]);
+					t.Invisibles     = ToColor(settings["invisibles"   ]);
+					t.LineHighlight  = ToColor(settings["lineHighlight"]);
+					t.Selection      = ToColor(settings["selection"    ]);
+					t.InvisibleStyle = ToStyle(settings["invisibles"   ]);
 					continue;
 				}
 
@@ -120,16 +121,21 @@ namespace HMSEditorNS {
 				editor.Editor.CaretColor = t.Caret;
 				editor.Editor.ForeColor  = t.Foreground;
 
-				editor.InvisibleCharsStyle    = t.InvisibleStyle;
 				editor.ColorCurrentLine       = t.LineHighlight;
 				editor.ColorChangedLine       = t.ChangedLines;
 				editor.Editor.SelectionColor  = t.Selection;
 				editor.Editor.PaddingBackColor= t.Background;
-				//editor.Editor.BreakpointLineColor = t.Background;
+				//editor.Editor.BreakpointLineColor = 
 
 				editor.Editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.Editor.BackColor;
 				editor.Editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.Editor.ForeColor);
 				editor.Editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.Editor.BackColor);
+
+				uint icol = (uint)editor.Editor.IndentBackColor.ToArgb();
+				if (icol < 0xFF808080) {
+					editor.ColorChangedLine = ToColor("#024A02");
+				}
+				editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
 
 				editor.Editor.SyntaxHighlighter.StyleTheme = t;
 				editor.Editor.RefreshTheme();
@@ -190,6 +196,7 @@ namespace HMSEditorNS {
 				tt.FunctionsStyle    = ToStyle2(tini.Get("FunctionsStyle"   , section, ""));
 				tt.VariableStyle     = ToStyle2(tini.Get("VariableStyle"    , section, ""));
 				tt.DeclFunctionStyle = ToStyle2(tini.Get("DeclFunctionStyle", section, ""));
+				tt.InvisibleStyle    = ToStyle (tini.Get("Invisibles"       , section, ""));
 				Dict.Add(section, tt);
 			}
 

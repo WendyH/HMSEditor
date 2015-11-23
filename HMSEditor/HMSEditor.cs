@@ -1196,7 +1196,7 @@ namespace HMSEditorNS {
 			Editor.AutoIndentChars = btnAutoIdentChars.Checked;
 		}
 
-		private void btnMarkChangedLines_Click(object sender, EventArgs e) {
+		public void btnMarkChangedLines_Click(object sender, EventArgs e) {
 			Editor.ChangedLineColor = btnMarkChangedLines.Checked ? ColorChangedLine : Color.Transparent;
 		}
 

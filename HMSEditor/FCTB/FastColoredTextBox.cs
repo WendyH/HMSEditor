@@ -6684,7 +6684,7 @@ namespace FastColoredTextBoxNS {
             DefaultStyle.RefreshColors(this);
 			((TextStyle)(SyntaxHighlighter.BoldStyle )).RefreshColors(this);
 			((TextStyle)(SyntaxHighlighter.BoldStyle2)).RefreshColors(this);
-			SyntaxHighlighter.InitStyleSchema(Language);
+            SyntaxHighlighter.InitStyleSchema(Language);
 			OnSyntaxHighlight(new TextChangedEventArgs(Range));
 			Refresh();
 		}

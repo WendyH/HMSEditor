@@ -261,7 +261,7 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class SelectionStyle : Style
     {
-        public Brush BackgroundBrush{ get; set;}
+        public Brush BackgroundBrush { get; set;}
         public Brush ForegroundBrush { get; private set; }
 
         public SelectionStyle(Brush backgroundBrush, Brush foregroundBrush = null)
