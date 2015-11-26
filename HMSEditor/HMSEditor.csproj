@@ -257,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\toggle_16xLG.png" />
     <None Include="Resources\Comment_11698.png" />
     <None Include="Resources\Bookmark_5776.png" />
     <None Include="Resources\NavigateForward_6271.png" />

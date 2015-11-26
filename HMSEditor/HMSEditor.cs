@@ -302,6 +302,7 @@ namespace HMSEditorNS {
 		public HMSEditor() {
 			InitializeComponent();
 			SetAutoCompleteMenu();
+			Themes.Init();
 		}
 
 		public HMSEditor(IntPtr hWnd) {
@@ -309,7 +310,8 @@ namespace HMSEditorNS {
 			InitializeComponent();
 			SetAutoCompleteMenu();
 			Editor.LostFocus += Editor_LostFocus;
-			//tsMain.Visible = false; // for attached default is not visible, restore saved value in LoadSettings()
+			tsMain.Visible = false; // for attached default is not visible, restore saved value in LoadSettings()
+			Themes.Init();
 		}
 
 		// Fields
@@ -1248,6 +1250,14 @@ namespace HMSEditorNS {
 
 		private void btnContextMenuForward_Click(object sender, EventArgs e) {
 			NavigateForward();
+		}
+
+		private void btnContextMenuToolBar_Click(object sender, EventArgs e) {
+			tsMain.Visible = !tsMain.Visible;
+		}
+
+		private void btnContextMenuGotoDef_Click(object sender, EventArgs e) {
+			GotoDefinition();
 		}
 
 		private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {

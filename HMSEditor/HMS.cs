@@ -446,7 +446,6 @@ namespace HMSEditorNS {
 		}
 
 		public static void InitAndLoadHMSKnowledgeDatabase() {
-			Themes.Init();
 
 			CreateIfNotExistDirectory(WorkingDir, true);
 			CreateIfNotExistDirectory(TemplatesDir);
@@ -615,11 +614,23 @@ namespace HMSEditorNS {
 			funcList = funcList.Substring(1).Replace("|Int|", "|Int\\(|");
             RegexHmsFunctions = new Regex(@"\b(" + funcList + @")\b", RegexOptions.IgnoreCase);
 
+			string varsList = "";
+			foreach (var q in ItemsVariable) varsList += "|" + q.MenuText;
+			varsList = varsList.Substring(1);
+			RegexHmsVariables = new Regex(@"\b(" + varsList + @")\b", RegexOptions.IgnoreCase);
+
+			varsList = "";
+			foreach (var q in ItemsConstant) varsList += "|" + q.MenuText;
+			varsList = varsList.Substring(1);
+			RegexHmsConstants = new Regex(@"\b(" + varsList + @")\b", RegexOptions.IgnoreCase);
+
 			ClassesString += NotFoundedType.ToLower();
 			HmsTypesString += "";
 		}
 		public static Regex RegexHmsFunctions = null;
-
+		public static Regex RegexHmsVariables = null;
+		public static Regex RegexHmsConstants = null;
+		
 
 		private static bool KnownType(string type) {
 			if (type.Length < 1) return true;

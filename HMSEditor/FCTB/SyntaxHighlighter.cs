@@ -658,16 +658,20 @@ namespace FastColoredTextBoxNS {
 			if (StyleTheme.TagBracketStyle != null) TagBracketStyle = StyleTheme.TagBracketStyle;
 			if (StyleTheme.CommentTagStyle != null) CommentTagStyle = StyleTheme.CommentTagStyle;
 			if (StyleTheme.FunctionsStyle  != null) FunctionsStyle  = StyleTheme.FunctionsStyle;
-			if (StyleTheme.DeclFunctionStyle != null) DeclFunctionStyle = StyleTheme.DeclFunctionStyle;
+			if (StyleTheme.VariableStyle   != null) VariableStyle   = StyleTheme.VariableStyle;
+			if (StyleTheme.ConstantsStyle  != null) ConstantsStyle  = StyleTheme.ConstantsStyle;
+            if (StyleTheme.DeclFunctionStyle != null) DeclFunctionStyle = StyleTheme.DeclFunctionStyle;
 			
 			StringStyle = RedStringsHighlight ? RedStyle : StringStyle; // By WendyH
 		}
 		// > By WendyH ------------------------------------------
 
 		public void InitStyleSchema(Language lang) {
-			FunctionsStyle    = DefaultStyle;
-			DeclFunctionStyle = DefaultStyle;
-			switch (lang) {
+			FunctionsStyle    = null;
+			DeclFunctionStyle = null;
+			VariableStyle     = null;
+			ConstantsStyle    = null;
+            switch (lang) {
 				case Language.CSharp:
 					StringStyle     = BrownStyle;
 					CommentStyle    = GreenStyle;
@@ -1337,12 +1341,14 @@ namespace FastColoredTextBoxNS {
 			range.tb.RightBracket  = ')';
 			range.tb.LeftBracket2  = '\x0';
 			range.tb.RightBracket2 = '\x0';
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, ClassNameStyle, TagBracketStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, ClassNameStyle, TagBracketStyle, VariableStyle, ConstantsStyle);
 			if (YAMLStringRegex == null) InitYAMLRegex();
 			range.SetStyle(NumberStyle, YAMLNumberRegex);
-			range.SetStyle(ClassNameStyle, YAMLObjectNameRegex);
+			range.SetStyle(ClassNameStyle , YAMLObjectNameRegex);
+			range.SetStyle(VariableStyle  , HMS.RegexHmsVariables);
+			range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
 			range.SetStyle(TagBracketStyle, YAMLBreaketsRegex);
-			range.SetStyle(KeywordStyle, YAMLKeywordRegex);
+			range.SetStyle(KeywordStyle   , YAMLKeywordRegex);
 			range.SetStylesStringsAndComments(YAMLStringRegex, StringStyle, CommentStyle);
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers(@"^[\s-]*?\w+\s*?:", "[IDENT]", RegexOptions.Multiline); // Allow to collapse block
@@ -1362,14 +1368,16 @@ namespace FastColoredTextBoxNS {
 			range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
 
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, BoldStyle, BoldStyle2, FunctionsStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, BoldStyle, BoldStyle2, FunctionsStyle, VariableStyle, ConstantsStyle);
 			if (PascalScriptStringRegex == null) InitPascalScriptRegex();
-			range.SetStyle(NumberStyle     , PascalScriptNumberRegex  );
-			range.SetStyle(KeywordStyle    , PascalScriptKeywordRegex1);
-			range.SetStyle(ClassNameStyle  , PascalScriptClassNameRegex);
+			range.SetStyle(NumberStyle      , PascalScriptNumberRegex  );
+			range.SetStyle(KeywordStyle     , PascalScriptKeywordRegex1);
+			range.SetStyle(ClassNameStyle   , PascalScriptClassNameRegex);
 			range.SetStyle(AltPascalKeywordsHighlight ? BoldStyle2 : BoldStyle, PascalScriptKeywordRegex2);
-			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
-			range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS);
+			range.SetStyle(FunctionsStyle   , HMS.RegexHmsFunctions);
+			range.SetStyle(VariableStyle    , HMS.RegexHmsVariables);
+			range.SetStyle(ConstantsStyle   , HMS.RegexHmsConstants);
+            range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS);
 			range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers(@"\b(begin|try)\b", @"\b(end)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
@@ -1387,13 +1395,15 @@ namespace FastColoredTextBoxNS {
 			range.tb.RightBracket2 = '}';
 			range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, AttributeStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, DeclFunctionStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, AttributeStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, DeclFunctionStyle, VariableStyle, ConstantsStyle);
 			if (CSharpStringRegex     == null) InitCSharpRegex();
 			if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
 			range.SetStyle(NumberStyle   , CSharpNumberRegex);
 			range.SetStyle(AttributeStyle, CSharpAttributeRegex);
 			range.SetStyle(ClassNameStyle, CPPClassNameRegex);
 			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
+			range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
+			range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
 			range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP);
             range.SetStyle(KeywordStyle  , CPPScriptKeywordRegex);
 			range.SetStylesStringsAndComments(CSharpStringAndCommentsRegex, StringStyle, CommentStyle);
@@ -1413,12 +1423,14 @@ namespace FastColoredTextBoxNS {
 			range.tb.RightBracket2 = '}';
 			range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);";
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, FunctionsStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle);
 			if (JScriptStringRegex == null) InitJScriptRegex();
 			if (HmsJScriptKeywordRegex == null) InitHmsJScriptRegex();
 			range.SetStyle(NumberStyle , JScriptNumberRegex);
 			range.SetStyle(KeywordStyle, HmsJScriptKeywordRegex);
 			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
+			range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
+			range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
 			range.SetStylesStringsAndComments(JScriptStringRegex, StringStyle, CommentStyle);
 			range.ClearFoldingMarkers();
 			range.SetFoldingMarkers("{", "}");       //allow to collapse brackets block
@@ -1435,7 +1447,7 @@ namespace FastColoredTextBoxNS {
 			range.tb.LeftBracket2  = '\x0';
 			range.tb.RightBracket2 = '\x0';
 			range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.\(\)]+\s*(?<range>=)\s*(?<range>.+)";
-			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, ClassNameStyle, KeywordStyle, FunctionsStyle);
+			range.ClearStyle(StringStyle, CommentStyle, NumberStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle);
 			if (VBStringRegex == null) InitVBRegex();
 			if (BasicScriptKeywordRegex1 == null) InitBasicScriptRegex();
 			range.SetStyle(NumberStyle   , VBNumberRegex);
@@ -1443,6 +1455,8 @@ namespace FastColoredTextBoxNS {
 			range.SetStyle(KeywordStyle  , BasicScriptKeywordRegex1);
 			range.SetStyle(BlueBoldStyle , BasicScriptKeywordRegex2);
 			range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
+			range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
+			range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
 			range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
 			range.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
 			range.ClearFoldingMarkers();
@@ -1575,7 +1589,10 @@ namespace FastColoredTextBoxNS {
 		/// </summary>
 		public Style TypesStyle { get; set; }
 
-		public Style DeclFunctionStyle { get; set; } // By WendyH
+		// < By WendyH ------------------------------
+		public Style ConstantsStyle    { get; set; }
+		public Style DeclFunctionStyle { get; set; }
+		// > By WendyH ------------------------------
 
 		#endregion
 	}
