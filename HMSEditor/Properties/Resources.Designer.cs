@@ -93,6 +93,16 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Bookmark_5776 {
+            get {
+                object obj = ResourceManager.GetObject("Bookmark_5776", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BookmarkClear_2381 {
             get {
                 object obj = ResourceManager.GetObject("BookmarkClear_2381", resourceCulture);
@@ -133,6 +143,16 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Comment_11698 {
+            get {
+                object obj = ResourceManager.GetObject("Comment_11698", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Copy_6524 {
             get {
                 object obj = ResourceManager.GetObject("Copy_6524", resourceCulture);
@@ -166,6 +186,26 @@ namespace HMSEditorNS.Properties {
         internal static System.Drawing.Bitmap logo {
             get {
                 object obj = ResourceManager.GetObject("logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NavigateBackwards_6270 {
+            get {
+                object obj = ResourceManager.GetObject("NavigateBackwards_6270", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NavigateForward_6271 {
+            get {
+                object obj = ResourceManager.GetObject("NavigateForward_6271", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

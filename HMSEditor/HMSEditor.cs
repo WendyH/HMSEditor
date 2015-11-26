@@ -1133,10 +1133,10 @@ namespace HMSEditorNS {
 			BookmarkNext();
 		}
 
-		private void btnGoTo_DropDownOpening(object sender, EventArgs e) {
-			btnGoTo.DropDownItems.Clear();
+		private void FillGoToItems(ToolStripItemCollection items) {
+			items.Clear();
 			foreach (var bookmark in Editor.Bookmarks) {
-				ToolStripItem item = btnGoTo.DropDownItems.Add(bookmark.Name, imageList1.Images[9]);
+				ToolStripItem item = items.Add(bookmark.Name, imageList1.Images[9]);
 				item.Tag = bookmark;
 				item.Click += (o, a) => {
 					var b = (Bookmark)(o as ToolStripItem).Tag;
@@ -1145,7 +1145,7 @@ namespace HMSEditorNS {
 			}
 			// --------------------------------------------------------
 			foreach (HMSItem item in Functions) {
-				ToolStripItem tipItem = btnGoTo.DropDownItems.Add(item.MenuText, imageList1.Images[item.ImageIndex]);
+				ToolStripItem tipItem = items.Add(item.MenuText, imageList1.Images[item.ImageIndex]);
 				tipItem.Tag = item.PositionStart;
 				tipItem.Click += (o, a) => {
 					try {
@@ -1155,6 +1155,10 @@ namespace HMSEditorNS {
 					} catch { }
 				};
 			}
+		}
+
+		private void btnGoTo_DropDownOpening(object sender, EventArgs e) {
+			FillGoToItems(btnGoTo.DropDownItems);
 		}
 
 		private void toolStripButtonHotKeys_Click(object sender, EventArgs e) {
@@ -1216,6 +1220,10 @@ namespace HMSEditorNS {
 			Editor.Delete();
 		}
 
+		private void btnContextMenuCommentBlock_Click(object sender, EventArgs e) {
+			Editor.CommentSelected();
+		}
+
 		private void ToolStripMenuItemBookmarkClear_Click(object sender, EventArgs e) {
 			BookmarkClear();
 		}
@@ -1226,12 +1234,31 @@ namespace HMSEditorNS {
 			foreach (int iLine in lines) ToggleBreakpoint(iLine);
 		}
 
+		private void ToolStripMenuItemSelectAll_Click(object sender, EventArgs e) {
+			Editor.SelectAll();
+		}
+
+		private void btnContextMenuToggleBookmark_Click(object sender, EventArgs e) {
+			Bookmark();
+		}
+
+		private void btnContextMenuBack_Click(object sender, EventArgs e) {
+			NavigateBackward();
+		}
+
+		private void btnContextMenuForward_Click(object sender, EventArgs e) {
+			NavigateForward();
+		}
+
 		private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
 			ToolStripMenuItemZoom100         .Enabled = (Editor.Zoom != 100);
 			ToolStripMenuItemUndo            .Enabled = Editor.UndoEnabled;
 			ToolStripMenuItemRedo            .Enabled = Editor.RedoEnabled;
 			ToolStripMenuItemBookmarkClear   .Enabled = (Editor.Bookmarks.Count > 0);
 			ToolStripMenuItemClearBreakpoints.Enabled = (Editor.Breakpoints.Count > 0);
+			btnContextMenuBack   .Enabled = Editor.NavigateBackward(true);
+			btnContextMenuForward.Enabled = Editor.NavigateForward (true);
+			FillGoToItems(btnGotoContextMenu.DropDownItems);
 		}
 
 		private void ToolStripMenuItemZoom100_Click(object sender, EventArgs e) {
@@ -1824,9 +1851,6 @@ namespace HMSEditorNS {
 			return regexCheckRussian.IsMatch(str);
 		}
 
-		private void ToolStripMenuItemSelectAll_Click(object sender, EventArgs e) {
-			Editor.SelectAll();
-		}
 	}
 
 }

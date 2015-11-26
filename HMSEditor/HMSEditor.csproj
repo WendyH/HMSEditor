@@ -257,6 +257,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\Comment_11698.png" />
+    <None Include="Resources\Bookmark_5776.png" />
+    <None Include="Resources\NavigateForward_6271.png" />
+    <None Include="Resources\NavigateBackwards_6270.png" />
     <EmbeddedResource Include="Resources\ColorThemes.txt" />
     <EmbeddedResource Include="Resources\Markdown.html" />
     <None Include="icons\logo.png" />

@@ -2047,7 +2047,7 @@ namespace FastColoredTextBoxNS {
 		/// <summary>
 		/// Navigates forward (by Line.LastVisit property)
 		/// </summary>
-		public bool NavigateForward() {
+		public bool NavigateForward(bool dontNavigate=false) {
 			DateTime min = DateTime.Now;
 			int iLine = -1;
 			for (int i = 0; i < LinesCount; i++)
@@ -2057,7 +2057,7 @@ namespace FastColoredTextBoxNS {
 						iLine = i;
 					}
 			if (iLine >= 0) {
-				Navigate(iLine);
+				if (!dontNavigate) Navigate(iLine);
 				return true;
 			} else
 				return false;
@@ -2066,7 +2066,7 @@ namespace FastColoredTextBoxNS {
 		/// <summary>
 		/// Navigates backward (by Line.LastVisit property)
 		/// </summary>
-		public bool NavigateBackward() {
+		public bool NavigateBackward(bool dontNavigate = false) {
 			var max = new DateTime();
 			int iLine = -1;
 			for (int i = 0; i < LinesCount; i++)
@@ -2076,7 +2076,7 @@ namespace FastColoredTextBoxNS {
 						iLine = i;
 					}
 			if (iLine >= 0) {
-				Navigate(iLine);
+				if (!dontNavigate) Navigate(iLine);
 				return true;
 			} else
 				return false;
