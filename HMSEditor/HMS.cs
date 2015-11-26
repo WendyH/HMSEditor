@@ -195,7 +195,9 @@ namespace HMSEditorNS {
 		}
 
 		public bool ContainsName(string name) {
-			return BinarySearch(new HMSItem(), new HMSItemComparer(name)) >= 0;
+			name = name.ToLower();
+			foreach (var o in this) if (o.MenuText.ToLower() == name) return true;
+			return false;
 		}
 
 		public HMSItem this[string name] {
