@@ -112,36 +112,43 @@ namespace HMSEditorNS {
 			bool   ital = (font.IndexOf("italic"   ) >= 0);
 			bool   undl = (font.IndexOf("underline") >= 0);
 			return ToStyle(fore, back, bold, ital, undl);
-        }
+		}
+
+		public static void SetTheme(FastColoredTextBox editor, string name) {
+			if (Dict.ContainsKey(name)) {
+				Theme t = Dict[name];
+				if ((t.ConstantsStyle == null) && (t.NumberStyle != null) && (name!="Стандартная"))
+					t.ConstantsStyle = ((TextStyle)t.NumberStyle).Clone(30);
+
+				editor.BackColor  = t.Background;
+				editor.CaretColor = t.Caret;
+				editor.ForeColor  = t.Foreground;
+
+				editor.SelectionColor  = t.Selection;
+				editor.PaddingBackColor= t.Background;
+				//editor.BreakpointLineColor = 
+
+				editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.BackColor;
+				editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.ForeColor);
+				editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.BackColor);
+
+				editor.SyntaxHighlighter.StyleTheme = t;
+				editor.RefreshTheme();
+			}
+		}
 
 		public static void SetTheme(HMSEditor editor, string name) {
 			if (Dict.ContainsKey(name)) {
+				SetTheme(editor.Editor, name);
 				Theme t = Dict[name];
-				if (t.ConstantsStyle == null) t.ConstantsStyle = t.NumberStyle;
+				editor.ColorCurrentLine = t.LineHighlight;
+				editor.ColorChangedLine = t.ChangedLines;
 
-				editor.Editor.BackColor  = t.Background;
-				editor.Editor.CaretColor = t.Caret;
-				editor.Editor.ForeColor  = t.Foreground;
+				// Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
+				uint icol = (uint)editor.Editor.IndentBackColor.ToArgb() & 0xFFFFFF;
+				if (icol < 0x808080) editor.ColorChangedLine = ToColor("#024A02");
 
-				editor.ColorCurrentLine       = t.LineHighlight;
-				editor.ColorChangedLine       = t.ChangedLines;
-				editor.Editor.SelectionColor  = t.Selection;
-				editor.Editor.PaddingBackColor= t.Background;
-				//editor.Editor.BreakpointLineColor = 
-
-				editor.Editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.Editor.BackColor;
-				editor.Editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.Editor.ForeColor);
-				editor.Editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.Editor.BackColor);
-
-				uint icol = (uint)editor.Editor.IndentBackColor.ToArgb();
-				if (icol < 0xFF808080) {
-					editor.ColorChangedLine = ToColor("#024A02");
-				}
 				editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
-
-				editor.Editor.SyntaxHighlighter.StyleTheme = t;
-				editor.Editor.RefreshTheme();
-
 			}
 		}
 

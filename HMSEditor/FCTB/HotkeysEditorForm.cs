@@ -17,9 +17,10 @@ namespace FastColoredTextBoxNS
             InitializeComponent();
             BuildWrappers(hotkeys);
             dgv.DataSource = wrappers;
-        }
+			StartPosition = FormStartPosition.CenterParent;
+		}
 
-        int CompereKeys(Keys key1, Keys key2)
+		int CompereKeys(Keys key1, Keys key2)
         {
             var res = ((int)key1 & 0xff).CompareTo((int)key2 & 0xff);
             if (res == 0)
@@ -123,6 +124,7 @@ namespace FastColoredTextBoxNS
 			// TO DO
 			// Save bindings to file in users home directory
         }
+
 	}
 
 	internal class HotkeyWrapper

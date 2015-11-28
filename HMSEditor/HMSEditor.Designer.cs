@@ -31,6 +31,28 @@
 			FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemUndo = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemRedo = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.btnContextMenuCommentBlock = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemCut = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemPaste = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemDelete = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+			this.btnGotoContextMenu = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnContextMenuGotoDef = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
+			this.btnContextMenuToggleBookmark = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemBookmarkClear = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemClearBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnInsertTemplate = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnContextMenuToolBar = new System.Windows.Forms.ToolStripMenuItem();
 			this.tsMain = new System.Windows.Forms.ToolStrip();
 			this.btnNavigateBack = new System.Windows.Forms.ToolStripButton();
 			this.btnNavigateForward = new System.Windows.Forms.ToolStripButton();
@@ -64,6 +86,7 @@
 			this.btnShowFoldingLines = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnInvisibleChars = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnEnableFolding = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
 			this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSubMenuIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,32 +109,10 @@
 			this.btnUnload = new System.Windows.Forms.ToolStripMenuItem();
 			this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-			this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemUndo = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemRedo = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-			this.btnContextMenuCommentBlock = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemCut = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemPaste = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemDelete = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-			this.btnGotoContextMenu = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
-			this.btnContextMenuToggleBookmark = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemBookmarkClear = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemClearBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnInsertTemplate = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnContextMenuToolBar = new System.Windows.Forms.ToolStripMenuItem();
-			this.btnContextMenuGotoDef = new System.Windows.Forms.ToolStripMenuItem();
-			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
-			this.tsMain.SuspendLayout();
 			this.contextMenuStrip1.SuspendLayout();
+			this.tsMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panel1
@@ -189,6 +190,199 @@
 			this.Editor.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseClick);
 			this.Editor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
 			this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnContextMenuBack,
+            this.btnContextMenuForward,
+            this.ToolStripMenuItemUndo,
+            this.ToolStripMenuItemRedo,
+            this.toolStripSeparator9,
+            this.btnContextMenuCommentBlock,
+            this.ToolStripMenuItemSelectAll,
+            this.ToolStripMenuItemCut,
+            this.ToolStripMenuItemCopy,
+            this.ToolStripMenuItemPaste,
+            this.ToolStripMenuItemDelete,
+            this.toolStripSeparator10,
+            this.btnGotoContextMenu,
+            this.btnContextMenuGotoDef,
+            this.toolStripSeparator13,
+            this.btnContextMenuToggleBookmark,
+            this.ToolStripMenuItemBookmarkClear,
+            this.ToolStripMenuItemClearBreakpoints,
+            this.ToolStripMenuItemZoom100,
+            this.btnInsertTemplate,
+            this.btnContextMenuToolBar});
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.Size = new System.Drawing.Size(235, 418);
+			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+			// 
+			// btnContextMenuBack
+			// 
+			this.btnContextMenuBack.Image = global::HMSEditorNS.Properties.Resources.NavigateBackwards_6270;
+			this.btnContextMenuBack.Name = "btnContextMenuBack";
+			this.btnContextMenuBack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Left)));
+			this.btnContextMenuBack.Size = new System.Drawing.Size(234, 22);
+			this.btnContextMenuBack.Text = "Назад";
+			this.btnContextMenuBack.Click += new System.EventHandler(this.btnContextMenuBack_Click);
+			// 
+			// btnContextMenuForward
+			// 
+			this.btnContextMenuForward.Image = global::HMSEditorNS.Properties.Resources.NavigateForward_6271;
+			this.btnContextMenuForward.Name = "btnContextMenuForward";
+			this.btnContextMenuForward.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Right)));
+			this.btnContextMenuForward.Size = new System.Drawing.Size(234, 22);
+			this.btnContextMenuForward.Text = "Вперёд";
+			this.btnContextMenuForward.Click += new System.EventHandler(this.btnContextMenuForward_Click);
+			// 
+			// ToolStripMenuItemUndo
+			// 
+			this.ToolStripMenuItemUndo.Image = global::HMSEditorNS.Properties.Resources.Arrow_UndoRevertRestore_16xLG_color;
+			this.ToolStripMenuItemUndo.Name = "ToolStripMenuItemUndo";
+			this.ToolStripMenuItemUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+			this.ToolStripMenuItemUndo.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemUndo.Text = "Отменить";
+			this.ToolStripMenuItemUndo.Click += new System.EventHandler(this.ToolStripMenuItemUndo_Click);
+			// 
+			// ToolStripMenuItemRedo
+			// 
+			this.ToolStripMenuItemRedo.Image = global::HMSEditorNS.Properties.Resources.Arrow_RedoRetry_16xLG_color;
+			this.ToolStripMenuItemRedo.Name = "ToolStripMenuItemRedo";
+			this.ToolStripMenuItemRedo.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+			this.ToolStripMenuItemRedo.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemRedo.Text = "Вернуть";
+			this.ToolStripMenuItemRedo.Click += new System.EventHandler(this.ToolStripMenuItemRedo_Click);
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			this.toolStripSeparator9.Size = new System.Drawing.Size(231, 6);
+			// 
+			// btnContextMenuCommentBlock
+			// 
+			this.btnContextMenuCommentBlock.Image = global::HMSEditorNS.Properties.Resources.Comment_11698;
+			this.btnContextMenuCommentBlock.Name = "btnContextMenuCommentBlock";
+			this.btnContextMenuCommentBlock.Size = new System.Drawing.Size(234, 22);
+			this.btnContextMenuCommentBlock.Text = "Закомментировать строки";
+			this.btnContextMenuCommentBlock.Click += new System.EventHandler(this.btnContextMenuCommentBlock_Click);
+			// 
+			// ToolStripMenuItemSelectAll
+			// 
+			this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
+			this.ToolStripMenuItemSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+			this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
+			this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
+			// 
+			// ToolStripMenuItemCut
+			// 
+			this.ToolStripMenuItemCut.Image = global::HMSEditorNS.Properties.Resources.Cut_6523;
+			this.ToolStripMenuItemCut.Name = "ToolStripMenuItemCut";
+			this.ToolStripMenuItemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+			this.ToolStripMenuItemCut.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemCut.Text = "Вырезать";
+			this.ToolStripMenuItemCut.Click += new System.EventHandler(this.ToolStripMenuItemCut_Click);
+			// 
+			// ToolStripMenuItemCopy
+			// 
+			this.ToolStripMenuItemCopy.Image = global::HMSEditorNS.Properties.Resources.Copy_6524;
+			this.ToolStripMenuItemCopy.Name = "ToolStripMenuItemCopy";
+			this.ToolStripMenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemCopy.Text = "Копировать";
+			this.ToolStripMenuItemCopy.Click += new System.EventHandler(this.ToolStripMenuItemCopy_Click);
+			// 
+			// ToolStripMenuItemPaste
+			// 
+			this.ToolStripMenuItemPaste.Image = global::HMSEditorNS.Properties.Resources.Paste_6520;
+			this.ToolStripMenuItemPaste.Name = "ToolStripMenuItemPaste";
+			this.ToolStripMenuItemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+			this.ToolStripMenuItemPaste.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemPaste.Text = "Вставить";
+			this.ToolStripMenuItemPaste.Click += new System.EventHandler(this.ToolStripMenuItemPaste_Click);
+			// 
+			// ToolStripMenuItemDelete
+			// 
+			this.ToolStripMenuItemDelete.Image = global::HMSEditorNS.Properties.Resources.Clearallrequests_8816;
+			this.ToolStripMenuItemDelete.Name = "ToolStripMenuItemDelete";
+			this.ToolStripMenuItemDelete.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemDelete.Text = "Удалить";
+			this.ToolStripMenuItemDelete.Click += new System.EventHandler(this.ToolStripMenuItemDelete_Click);
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			this.toolStripSeparator10.Size = new System.Drawing.Size(231, 6);
+			// 
+			// btnGotoContextMenu
+			// 
+			this.btnGotoContextMenu.Name = "btnGotoContextMenu";
+			this.btnGotoContextMenu.Size = new System.Drawing.Size(234, 22);
+			this.btnGotoContextMenu.Text = "Перейти";
+			// 
+			// btnContextMenuGotoDef
+			// 
+			this.btnContextMenuGotoDef.Name = "btnContextMenuGotoDef";
+			this.btnContextMenuGotoDef.ShortcutKeys = System.Windows.Forms.Keys.F12;
+			this.btnContextMenuGotoDef.Size = new System.Drawing.Size(234, 22);
+			this.btnContextMenuGotoDef.Text = "Перейти к определению";
+			this.btnContextMenuGotoDef.Click += new System.EventHandler(this.btnContextMenuGotoDef_Click);
+			// 
+			// toolStripSeparator13
+			// 
+			this.toolStripSeparator13.Name = "toolStripSeparator13";
+			this.toolStripSeparator13.Size = new System.Drawing.Size(231, 6);
+			// 
+			// btnContextMenuToggleBookmark
+			// 
+			this.btnContextMenuToggleBookmark.Image = global::HMSEditorNS.Properties.Resources.Bookmark_5776;
+			this.btnContextMenuToggleBookmark.Name = "btnContextMenuToggleBookmark";
+			this.btnContextMenuToggleBookmark.Size = new System.Drawing.Size(234, 22);
+			this.btnContextMenuToggleBookmark.Text = "Переключить закладку";
+			this.btnContextMenuToggleBookmark.Click += new System.EventHandler(this.btnContextMenuToggleBookmark_Click);
+			// 
+			// ToolStripMenuItemBookmarkClear
+			// 
+			this.ToolStripMenuItemBookmarkClear.Image = global::HMSEditorNS.Properties.Resources.BookmarkClear_2381;
+			this.ToolStripMenuItemBookmarkClear.Name = "ToolStripMenuItemBookmarkClear";
+			this.ToolStripMenuItemBookmarkClear.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemBookmarkClear.Text = "Удалить все закладки";
+			this.ToolStripMenuItemBookmarkClear.Click += new System.EventHandler(this.ToolStripMenuItemBookmarkClear_Click);
+			// 
+			// ToolStripMenuItemClearBreakpoints
+			// 
+			this.ToolStripMenuItemClearBreakpoints.Image = global::HMSEditorNS.Properties.Resources.clearallbreakpoints_6551;
+			this.ToolStripMenuItemClearBreakpoints.Name = "ToolStripMenuItemClearBreakpoints";
+			this.ToolStripMenuItemClearBreakpoints.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemClearBreakpoints.Text = "Удалить все точки останова";
+			this.ToolStripMenuItemClearBreakpoints.Click += new System.EventHandler(this.ToolStripMenuItemClearBreakpoints_Click);
+			// 
+			// ToolStripMenuItemZoom100
+			// 
+			this.ToolStripMenuItemZoom100.Name = "ToolStripMenuItemZoom100";
+			this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(234, 22);
+			this.ToolStripMenuItemZoom100.Text = "Zoom 100%";
+			this.ToolStripMenuItemZoom100.Click += new System.EventHandler(this.ToolStripMenuItemZoom100_Click);
+			// 
+			// btnInsertTemplate
+			// 
+			this.btnInsertTemplate.Image = global::HMSEditorNS.Properties.Resources.Template_Application_16xLG;
+			this.btnInsertTemplate.Name = "btnInsertTemplate";
+			this.btnInsertTemplate.Size = new System.Drawing.Size(234, 22);
+			this.btnInsertTemplate.Text = "Вставить шаблон";
+			// 
+			// btnContextMenuToolBar
+			// 
+			this.btnContextMenuToolBar.CheckOnClick = true;
+			this.btnContextMenuToolBar.Image = global::HMSEditorNS.Properties.Resources.toggle_16xLG;
+			this.btnContextMenuToolBar.Name = "btnContextMenuToolBar";
+			this.btnContextMenuToolBar.ShortcutKeys = System.Windows.Forms.Keys.F11;
+			this.btnContextMenuToolBar.Size = new System.Drawing.Size(234, 22);
+			this.btnContextMenuToolBar.Text = "Панель инструментов";
+			this.btnContextMenuToolBar.Click += new System.EventHandler(this.btnContextMenuToolBar_Click);
 			// 
 			// tsMain
 			// 
@@ -457,6 +651,7 @@
             this.btnShowFoldingLines,
             this.btnInvisibleChars,
             this.btnVerticalLineText,
+            this.btnEnableFolding,
             this.toolStripSeparator12,
             this.btnHighlightSameWords,
             this.toolStripSubMenuIntelliSense,
@@ -527,6 +722,15 @@
 			this.btnVerticalLineText.Size = new System.Drawing.Size(313, 22);
 			this.btnVerticalLineText.Text = "Вертикальная линия границы текста";
 			this.btnVerticalLineText.Click += new System.EventHandler(this.btnVerticalLineText_Click);
+			// 
+			// btnEnableFolding
+			// 
+			this.btnEnableFolding.CheckOnClick = true;
+			this.btnEnableFolding.Name = "btnEnableFolding";
+			this.btnEnableFolding.Size = new System.Drawing.Size(313, 22);
+			this.btnEnableFolding.Text = "Элементы свёртки блоков кода";
+			this.btnEnableFolding.ToolTipText = "Отображать элементы для возможности свернуть/развернуть участки кода";
+			this.btnEnableFolding.Click += new System.EventHandler(this.btnEnableFolding_Click);
 			// 
 			// toolStripSeparator12
 			// 
@@ -733,199 +937,6 @@
 			this.imageList1.Images.SetKeyName(11, "Event_594.png");
 			this.imageList1.Images.SetKeyName(12, "Template_Application_16xLG.png");
 			// 
-			// btnContextMenuBack
-			// 
-			this.btnContextMenuBack.Image = global::HMSEditorNS.Properties.Resources.NavigateBackwards_6270;
-			this.btnContextMenuBack.Name = "btnContextMenuBack";
-			this.btnContextMenuBack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Left)));
-			this.btnContextMenuBack.Size = new System.Drawing.Size(234, 22);
-			this.btnContextMenuBack.Text = "Назад";
-			this.btnContextMenuBack.Click += new System.EventHandler(this.btnContextMenuBack_Click);
-			// 
-			// btnContextMenuForward
-			// 
-			this.btnContextMenuForward.Image = global::HMSEditorNS.Properties.Resources.NavigateForward_6271;
-			this.btnContextMenuForward.Name = "btnContextMenuForward";
-			this.btnContextMenuForward.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Right)));
-			this.btnContextMenuForward.Size = new System.Drawing.Size(234, 22);
-			this.btnContextMenuForward.Text = "Вперёд";
-			this.btnContextMenuForward.Click += new System.EventHandler(this.btnContextMenuForward_Click);
-			// 
-			// ToolStripMenuItemUndo
-			// 
-			this.ToolStripMenuItemUndo.Image = global::HMSEditorNS.Properties.Resources.Arrow_UndoRevertRestore_16xLG_color;
-			this.ToolStripMenuItemUndo.Name = "ToolStripMenuItemUndo";
-			this.ToolStripMenuItemUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-			this.ToolStripMenuItemUndo.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemUndo.Text = "Отменить";
-			this.ToolStripMenuItemUndo.Click += new System.EventHandler(this.ToolStripMenuItemUndo_Click);
-			// 
-			// ToolStripMenuItemRedo
-			// 
-			this.ToolStripMenuItemRedo.Image = global::HMSEditorNS.Properties.Resources.Arrow_RedoRetry_16xLG_color;
-			this.ToolStripMenuItemRedo.Name = "ToolStripMenuItemRedo";
-			this.ToolStripMenuItemRedo.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Z)));
-			this.ToolStripMenuItemRedo.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemRedo.Text = "Вернуть";
-			this.ToolStripMenuItemRedo.Click += new System.EventHandler(this.ToolStripMenuItemRedo_Click);
-			// 
-			// toolStripSeparator9
-			// 
-			this.toolStripSeparator9.Name = "toolStripSeparator9";
-			this.toolStripSeparator9.Size = new System.Drawing.Size(231, 6);
-			// 
-			// btnContextMenuCommentBlock
-			// 
-			this.btnContextMenuCommentBlock.Image = global::HMSEditorNS.Properties.Resources.Comment_11698;
-			this.btnContextMenuCommentBlock.Name = "btnContextMenuCommentBlock";
-			this.btnContextMenuCommentBlock.Size = new System.Drawing.Size(234, 22);
-			this.btnContextMenuCommentBlock.Text = "Закомментировать строки";
-			this.btnContextMenuCommentBlock.Click += new System.EventHandler(this.btnContextMenuCommentBlock_Click);
-			// 
-			// ToolStripMenuItemSelectAll
-			// 
-			this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
-			this.ToolStripMenuItemSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-			this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
-			this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
-			// 
-			// ToolStripMenuItemCut
-			// 
-			this.ToolStripMenuItemCut.Image = global::HMSEditorNS.Properties.Resources.Cut_6523;
-			this.ToolStripMenuItemCut.Name = "ToolStripMenuItemCut";
-			this.ToolStripMenuItemCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-			this.ToolStripMenuItemCut.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemCut.Text = "Вырезать";
-			this.ToolStripMenuItemCut.Click += new System.EventHandler(this.ToolStripMenuItemCut_Click);
-			// 
-			// ToolStripMenuItemCopy
-			// 
-			this.ToolStripMenuItemCopy.Image = global::HMSEditorNS.Properties.Resources.Copy_6524;
-			this.ToolStripMenuItemCopy.Name = "ToolStripMenuItemCopy";
-			this.ToolStripMenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemCopy.Text = "Копировать";
-			this.ToolStripMenuItemCopy.Click += new System.EventHandler(this.ToolStripMenuItemCopy_Click);
-			// 
-			// ToolStripMenuItemPaste
-			// 
-			this.ToolStripMenuItemPaste.Image = global::HMSEditorNS.Properties.Resources.Paste_6520;
-			this.ToolStripMenuItemPaste.Name = "ToolStripMenuItemPaste";
-			this.ToolStripMenuItemPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.ToolStripMenuItemPaste.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemPaste.Text = "Вставить";
-			this.ToolStripMenuItemPaste.Click += new System.EventHandler(this.ToolStripMenuItemPaste_Click);
-			// 
-			// ToolStripMenuItemDelete
-			// 
-			this.ToolStripMenuItemDelete.Image = global::HMSEditorNS.Properties.Resources.Clearallrequests_8816;
-			this.ToolStripMenuItemDelete.Name = "ToolStripMenuItemDelete";
-			this.ToolStripMenuItemDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.ToolStripMenuItemDelete.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemDelete.Text = "Удалить";
-			this.ToolStripMenuItemDelete.Click += new System.EventHandler(this.ToolStripMenuItemDelete_Click);
-			// 
-			// toolStripSeparator10
-			// 
-			this.toolStripSeparator10.Name = "toolStripSeparator10";
-			this.toolStripSeparator10.Size = new System.Drawing.Size(231, 6);
-			// 
-			// btnGotoContextMenu
-			// 
-			this.btnGotoContextMenu.Name = "btnGotoContextMenu";
-			this.btnGotoContextMenu.Size = new System.Drawing.Size(234, 22);
-			this.btnGotoContextMenu.Text = "Перейти";
-			// 
-			// toolStripSeparator13
-			// 
-			this.toolStripSeparator13.Name = "toolStripSeparator13";
-			this.toolStripSeparator13.Size = new System.Drawing.Size(231, 6);
-			// 
-			// btnContextMenuToggleBookmark
-			// 
-			this.btnContextMenuToggleBookmark.Image = global::HMSEditorNS.Properties.Resources.Bookmark_5776;
-			this.btnContextMenuToggleBookmark.Name = "btnContextMenuToggleBookmark";
-			this.btnContextMenuToggleBookmark.Size = new System.Drawing.Size(234, 22);
-			this.btnContextMenuToggleBookmark.Text = "Переключить закладку";
-			this.btnContextMenuToggleBookmark.Click += new System.EventHandler(this.btnContextMenuToggleBookmark_Click);
-			// 
-			// ToolStripMenuItemBookmarkClear
-			// 
-			this.ToolStripMenuItemBookmarkClear.Image = global::HMSEditorNS.Properties.Resources.BookmarkClear_2381;
-			this.ToolStripMenuItemBookmarkClear.Name = "ToolStripMenuItemBookmarkClear";
-			this.ToolStripMenuItemBookmarkClear.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemBookmarkClear.Text = "Удалить все закладки";
-			this.ToolStripMenuItemBookmarkClear.Click += new System.EventHandler(this.ToolStripMenuItemBookmarkClear_Click);
-			// 
-			// ToolStripMenuItemClearBreakpoints
-			// 
-			this.ToolStripMenuItemClearBreakpoints.Image = global::HMSEditorNS.Properties.Resources.clearallbreakpoints_6551;
-			this.ToolStripMenuItemClearBreakpoints.Name = "ToolStripMenuItemClearBreakpoints";
-			this.ToolStripMenuItemClearBreakpoints.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemClearBreakpoints.Text = "Удалить все точки останова";
-			this.ToolStripMenuItemClearBreakpoints.Click += new System.EventHandler(this.ToolStripMenuItemClearBreakpoints_Click);
-			// 
-			// ToolStripMenuItemZoom100
-			// 
-			this.ToolStripMenuItemZoom100.Name = "ToolStripMenuItemZoom100";
-			this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(234, 22);
-			this.ToolStripMenuItemZoom100.Text = "Zoom 100%";
-			this.ToolStripMenuItemZoom100.Click += new System.EventHandler(this.ToolStripMenuItemZoom100_Click);
-			// 
-			// btnInsertTemplate
-			// 
-			this.btnInsertTemplate.Image = global::HMSEditorNS.Properties.Resources.Template_Application_16xLG;
-			this.btnInsertTemplate.Name = "btnInsertTemplate";
-			this.btnInsertTemplate.Size = new System.Drawing.Size(234, 22);
-			this.btnInsertTemplate.Text = "Вставить шаблон";
-			// 
-			// btnContextMenuToolBar
-			// 
-			this.btnContextMenuToolBar.Image = global::HMSEditorNS.Properties.Resources.toggle_16xLG;
-			this.btnContextMenuToolBar.Name = "btnContextMenuToolBar";
-			this.btnContextMenuToolBar.ShortcutKeys = System.Windows.Forms.Keys.F11;
-			this.btnContextMenuToolBar.Size = new System.Drawing.Size(234, 22);
-			this.btnContextMenuToolBar.Text = "Панель инструментов";
-			this.btnContextMenuToolBar.Click += new System.EventHandler(this.btnContextMenuToolBar_Click);
-			// 
-			// btnContextMenuGotoDef
-			// 
-			this.btnContextMenuGotoDef.Name = "btnContextMenuGotoDef";
-			this.btnContextMenuGotoDef.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.btnContextMenuGotoDef.Size = new System.Drawing.Size(234, 22);
-			this.btnContextMenuGotoDef.Text = "Перейти к определению";
-			this.btnContextMenuGotoDef.Click += new System.EventHandler(this.btnContextMenuGotoDef_Click);
-			// 
-			// contextMenuStrip1
-			// 
-			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnContextMenuBack,
-            this.btnContextMenuForward,
-            this.ToolStripMenuItemUndo,
-            this.ToolStripMenuItemRedo,
-            this.toolStripSeparator9,
-            this.btnContextMenuCommentBlock,
-            this.ToolStripMenuItemSelectAll,
-            this.ToolStripMenuItemCut,
-            this.ToolStripMenuItemCopy,
-            this.ToolStripMenuItemPaste,
-            this.ToolStripMenuItemDelete,
-            this.toolStripSeparator10,
-            this.btnGotoContextMenu,
-            this.btnContextMenuGotoDef,
-            this.toolStripSeparator13,
-            this.btnContextMenuToggleBookmark,
-            this.ToolStripMenuItemBookmarkClear,
-            this.ToolStripMenuItemClearBreakpoints,
-            this.ToolStripMenuItemZoom100,
-            this.btnInsertTemplate,
-            this.btnContextMenuToolBar});
-			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(235, 418);
-			this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
-			// 
 			// HMSEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -936,9 +947,9 @@
 			this.Size = new System.Drawing.Size(948, 530);
 			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
+			this.contextMenuStrip1.ResumeLayout(false);
 			this.tsMain.ResumeLayout(false);
 			this.tsMain.PerformLayout();
-			this.contextMenuStrip1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1024,5 +1035,6 @@
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemZoom100;
 		private System.Windows.Forms.ToolStripMenuItem btnInsertTemplate;
 		private System.Windows.Forms.ToolStripMenuItem btnContextMenuToolBar;
+		private System.Windows.Forms.ToolStripMenuItem btnEnableFolding;
 	}
 }

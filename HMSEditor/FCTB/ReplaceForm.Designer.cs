@@ -20,13 +20,13 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+		#region Код, автоматически созданный конструктором компонентов
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
         {
 			this.btClose = new System.Windows.Forms.Button();
 			this.btFindNext = new System.Windows.Forms.Button();
@@ -43,9 +43,9 @@
 			// 
 			// btClose
 			// 
-			this.btClose.Location = new System.Drawing.Point(351, 123);
+			this.btClose.Location = new System.Drawing.Point(351, 120);
 			this.btClose.Name = "btClose";
-			this.btClose.Size = new System.Drawing.Size(90, 24);
+			this.btClose.Size = new System.Drawing.Size(90, 25);
 			this.btClose.TabIndex = 8;
 			this.btClose.Text = "Закрыть";
 			this.btClose.UseVisualStyleBackColor = true;
@@ -55,7 +55,7 @@
 			// 
 			this.btFindNext.Location = new System.Drawing.Point(129, 90);
 			this.btFindNext.Name = "btFindNext";
-			this.btFindNext.Size = new System.Drawing.Size(120, 27);
+			this.btFindNext.Size = new System.Drawing.Size(120, 25);
 			this.btFindNext.TabIndex = 5;
 			this.btFindNext.Text = "Найти следующий";
 			this.btFindNext.UseVisualStyleBackColor = true;
@@ -116,7 +116,7 @@
 			// 
 			this.btReplace.Location = new System.Drawing.Point(255, 90);
 			this.btReplace.Name = "btReplace";
-			this.btReplace.Size = new System.Drawing.Size(90, 27);
+			this.btReplace.Size = new System.Drawing.Size(90, 25);
 			this.btReplace.TabIndex = 6;
 			this.btReplace.Text = "Заменить";
 			this.btReplace.UseVisualStyleBackColor = true;
@@ -126,7 +126,7 @@
 			// 
 			this.btReplaceAll.Location = new System.Drawing.Point(351, 90);
 			this.btReplaceAll.Name = "btReplaceAll";
-			this.btReplaceAll.Size = new System.Drawing.Size(90, 27);
+			this.btReplaceAll.Size = new System.Drawing.Size(90, 25);
 			this.btReplaceAll.TabIndex = 7;
 			this.btReplaceAll.Text = "Заменить все";
 			this.btReplaceAll.UseVisualStyleBackColor = true;
@@ -154,7 +154,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(449, 157);
+			this.ClientSize = new System.Drawing.Size(449, 151);
 			this.Controls.Add(this.tbFind);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.tbReplace);
@@ -170,7 +170,6 @@
 			this.Name = "ReplaceForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Поиск и замена текста";
 			this.TopMost = true;
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReplaceForm_FormClosing);

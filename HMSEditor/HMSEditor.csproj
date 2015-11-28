@@ -123,6 +123,12 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FormRename.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRename.Designer.cs">
+      <DependentUpon>FormRename.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormUpdateInfo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,17 +152,23 @@
     <Compile Include="FCTB\FindForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\FindForm.Designer.cs" />
+    <Compile Include="FCTB\FindForm.Designer.cs">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\GoToForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\GoToForm.Designer.cs" />
+    <Compile Include="FCTB\GoToForm.Designer.cs">
+      <DependentUpon>GoToForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\Hints.cs" />
     <Compile Include="FCTB\Hotkeys.cs" />
     <Compile Include="FCTB\HotkeysEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\HotkeysEditorForm.Designer.cs" />
+    <Compile Include="FCTB\HotkeysEditorForm.Designer.cs">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\LimitedStack.cs" />
     <Compile Include="FCTB\Line.cs" />
     <Compile Include="FCTB\LinesAccessor.cs" />
@@ -166,7 +178,9 @@
     <Compile Include="FCTB\ReplaceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\ReplaceForm.Designer.cs" />
+    <Compile Include="FCTB\ReplaceForm.Designer.cs">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\Ruler.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -217,12 +231,22 @@
       <DependentUpon>AutocompleteMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FCTB\FastColoredTextBox.resx" />
-    <EmbeddedResource Include="FCTB\FindForm.resx" />
+    <EmbeddedResource Include="FCTB\FindForm.resx">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FCTB\GoToForm.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>GoToForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx" />
-    <EmbeddedResource Include="FCTB\ReplaceForm.resx" />
+    <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FCTB\ReplaceForm.resx">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRename.resx">
+      <DependentUpon>FormRename.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormUpdateInfo.resx">
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
     </EmbeddedResource>
